@@ -1,54 +1,125 @@
 import { useState } from 'react'
 import ChecklistHabilitacion from './components/ChecklistHabilitacion'
-import SimuladorIngresos from './components/SimuladorIngresos'
-import MonitorCrecimiento from './components/MonitorCrecimiento'
-import PlanificadorCapex from './components/PlanificadorCapex'
 import CronogramaHabilitacion from './components/CronogramaHabilitacion'
+import PlanificadorCapex from './components/PlanificadorCapex'
+import SimuladorIngresos from './components/SimuladorIngresos'
 import CalculadoraFonasa from './components/CalculadoraFonasa'
+import SimuladorFinanciamiento from './components/SimuladorFinanciamiento'
+import GeneradorDocumentos from './components/GeneradorDocumentos'
+import DashboardOperacional from './components/DashboardOperacional'
+import MonitorCrecimiento from './components/MonitorCrecimiento'
+import ControlStock from './components/ControlStock'
+import TrackerREAS from './components/TrackerREAS'
+import PipelineB2B from './components/PipelineB2B'
+import RoadmapFase2 from './components/RoadmapFase2'
 import './App.css'
 
 const MODULOS = [
+  // ── Pre-Apertura ─────────────────────────────────────
   {
     id: 'checklist',
     label: 'Checklist Habilitación',
     descripcion: 'Requisitos SEREMI',
     icono: '✅',
+    grupo: 'Pre-Apertura',
     componente: ChecklistHabilitacion,
-  },
-  {
-    id: 'ingresos',
-    label: 'Simulador de Ingresos',
-    descripcion: 'Proyección por exámenes',
-    icono: '💰',
-    componente: SimuladorIngresos,
-  },
-  {
-    id: 'crecimiento',
-    label: 'Monitor de Crecimiento',
-    descripcion: 'Real vs proyectado',
-    icono: '📈',
-    componente: MonitorCrecimiento,
-  },
-  {
-    id: 'capex',
-    label: 'Planificador CAPEX',
-    descripcion: 'Inversión inicial',
-    icono: '🏗️',
-    componente: PlanificadorCapex,
   },
   {
     id: 'cronograma',
     label: 'Cronograma',
     descripcion: 'Gantt de habilitación',
     icono: '📅',
+    grupo: 'Pre-Apertura',
     componente: CronogramaHabilitacion,
+  },
+  {
+    id: 'capex',
+    label: 'Planificador CAPEX',
+    descripcion: 'Inversión inicial',
+    icono: '💰',
+    grupo: 'Pre-Apertura',
+    componente: PlanificadorCapex,
+  },
+  {
+    id: 'simulador',
+    label: 'Simulador de Ingresos',
+    descripcion: 'Proyección por exámenes',
+    icono: '📊',
+    grupo: 'Pre-Apertura',
+    componente: SimuladorIngresos,
   },
   {
     id: 'fonasa',
     label: 'Calculadora FONASA',
     descripcion: 'Copago por tramo',
-    icono: '🏥',
+    icono: '💵',
+    grupo: 'Pre-Apertura',
     componente: CalculadoraFonasa,
+  },
+  {
+    id: 'financ',
+    label: 'Simulador Financiamiento',
+    descripcion: 'Sercotec + CORFO + BancoEstado',
+    icono: '🏦',
+    grupo: 'Pre-Apertura',
+    componente: SimuladorFinanciamiento,
+  },
+  {
+    id: 'docs',
+    label: 'Generador Documentos',
+    descripcion: '6 documentos SEREMI',
+    icono: '📄',
+    grupo: 'Pre-Apertura',
+    componente: GeneradorDocumentos,
+  },
+  // ── Post-Apertura ─────────────────────────────────────
+  {
+    id: 'dashboard',
+    label: 'Dashboard Operacional',
+    descripcion: 'KPIs y registro diario',
+    icono: '🗂️',
+    grupo: 'Post-Apertura',
+    componente: DashboardOperacional,
+  },
+  {
+    id: 'monitor',
+    label: 'Monitor de Crecimiento',
+    descripcion: 'Real vs proyectado',
+    icono: '📈',
+    grupo: 'Post-Apertura',
+    componente: MonitorCrecimiento,
+  },
+  {
+    id: 'stock',
+    label: 'Control de Stock',
+    descripcion: 'Inventario y alertas',
+    icono: '📦',
+    grupo: 'Post-Apertura',
+    componente: ControlStock,
+  },
+  {
+    id: 'reas',
+    label: 'Tracker REAS',
+    descripcion: 'Bitácora retiros REAS',
+    icono: '♻️',
+    grupo: 'Post-Apertura',
+    componente: TrackerREAS,
+  },
+  {
+    id: 'b2b',
+    label: 'Pipeline B2B',
+    descripcion: 'CRM CMPC / Arauco',
+    icono: '🤝',
+    grupo: 'Post-Apertura',
+    componente: PipelineB2B,
+  },
+  {
+    id: 'roadmap',
+    label: 'Roadmap Fase 2',
+    descripcion: 'Evolución a centro médico',
+    icono: '🚀',
+    grupo: 'Post-Apertura',
+    componente: RoadmapFase2,
   },
 ]
 
@@ -82,24 +153,28 @@ export default function App() {
         </div>
 
         <nav className="sidebar-nav">
-          <p className="sidebar-seccion">Herramientas</p>
-          {MODULOS.map(m => (
-            <button
-              key={m.id}
-              className={`sidebar-item ${activo === m.id ? 'activo' : ''}`}
-              onClick={() => navegar(m.id)}
-            >
-              <span className="sidebar-icono">{m.icono}</span>
-              <span className="sidebar-texto">
-                <span className="sidebar-label">{m.label}</span>
-                <span className="sidebar-desc">{m.descripcion}</span>
-              </span>
-            </button>
+          {MODULOS.map((m, i) => (
+            <div key={m.id}>
+              {/* Cabecera de grupo cuando cambia el grupo */}
+              {(i === 0 || MODULOS[i - 1].grupo !== m.grupo) && (
+                <p className="sidebar-seccion">{m.grupo}</p>
+              )}
+              <button
+                className={`sidebar-item ${activo === m.id ? 'activo' : ''}`}
+                onClick={() => navegar(m.id)}
+              >
+                <span className="sidebar-icono">{m.icono}</span>
+                <span className="sidebar-texto">
+                  <span className="sidebar-label">{m.label}</span>
+                  <span className="sidebar-desc">{m.descripcion}</span>
+                </span>
+              </button>
+            </div>
           ))}
         </nav>
 
         <div className="sidebar-footer">
-          <span>Suite v1.0</span>
+          <span>Suite v2.0 · {MODULOS.length} herramientas</span>
         </div>
       </aside>
 
