@@ -1,118 +1,133 @@
 import { useState, useMemo } from 'react'
 
 const TRAMOS = [
-  { tramo: 'A', descripcion: 'Indigente / sin ingresos', copago: 0 },
-  { tramo: 'B', descripcion: 'Renta ≤ $370.000', copago: 0 },
-  { tramo: 'C', descripcion: 'Renta $370.001 – $524.000', copago: 10 },
-  { tramo: 'D', descripcion: 'Renta > $524.000', copago: 20 },
+  { tramo: 'A', descripcion: 'Indigente / sin ingresos',        copago: 0  },
+  { tramo: 'B', descripcion: 'Renta ≤ $370.000',                copago: 0  },
+  { tramo: 'C', descripcion: 'Renta $370.001 – $524.000',       copago: 10 },
+  { tramo: 'D', descripcion: 'Renta > $524.000',                copago: 20 },
 ]
 
 const PRESTACIONES = [
-  { codigo: '03.01.001', nombre: 'Hemograma', valorBase: 4890 },
-  { codigo: '03.01.002', nombre: 'VHS', valorBase: 2100 },
-  { codigo: '03.01.010', nombre: 'Glicemia', valorBase: 2950 },
-  { codigo: '03.01.015', nombre: 'Perfil lipídico', valorBase: 7800 },
-  { codigo: '03.01.020', nombre: 'Creatinina', valorBase: 3100 },
-  { codigo: '03.01.030', nombre: 'TSH', valorBase: 6900 },
-  { codigo: '03.01.035', nombre: 'T4 libre', valorBase: 5800 },
-  { codigo: '03.01.040', nombre: 'Orina completa', valorBase: 3200 },
-  { codigo: '03.01.050', nombre: 'Urocultivo', valorBase: 9500 },
-  { codigo: '03.01.060', nombre: 'PCR cuantitativa', valorBase: 4500 },
+  { codigo: '03.01.001', nombre: 'Hemograma',       valorBase: 4890  },
+  { codigo: '03.01.002', nombre: 'VHS',             valorBase: 2100  },
+  { codigo: '03.01.010', nombre: 'Glicemia',        valorBase: 2950  },
+  { codigo: '03.01.015', nombre: 'Perfil lipídico', valorBase: 7800  },
+  { codigo: '03.01.020', nombre: 'Creatinina',      valorBase: 3100  },
+  { codigo: '03.01.030', nombre: 'TSH',             valorBase: 6900  },
+  { codigo: '03.01.035', nombre: 'T4 libre',        valorBase: 5800  },
+  { codigo: '03.01.040', nombre: 'Orina completa',  valorBase: 3200  },
+  { codigo: '03.01.050', nombre: 'Urocultivo',      valorBase: 9500  },
+  { codigo: '03.01.060', nombre: 'PCR cuantitativa',valorBase: 4500  },
 ]
 
 const fmt = (n) => n.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
 
+const chip  = { display: 'inline-block', fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#60a5fa', background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: 99, padding: '3px 12px', marginBottom: 12 }
+const h1st  = { fontSize: 32, fontWeight: 800, color: '#e8f4ff', letterSpacing: '-0.03em', lineHeight: 1.15, marginBottom: 6 }
+
 export default function CalculadoraFonasa() {
-  const [tramo, setTramo] = useState('B')
+  const [tramo,     setTramo]     = useState('B')
   const [seleccion, setSeleccion] = useState({})
 
   const tramoActual = TRAMOS.find(t => t.tramo === tramo)
-
-  const toggle = (codigo) =>
-    setSeleccion(prev => ({ ...prev, [codigo]: !prev[codigo] }))
-
+  const toggle      = (codigo) => setSeleccion(prev => ({ ...prev, [codigo]: !prev[codigo] }))
   const seleccionadas = PRESTACIONES.filter(p => seleccion[p.codigo])
 
   const resumen = useMemo(() => {
-    const totalBase = seleccionadas.reduce((s, p) => s + p.valorBase, 0)
-    const totalFonasa = totalBase
-    const copagoPct = tramoActual.copago / 100
+    const totalBase      = seleccionadas.reduce((s, p) => s + p.valorBase, 0)
+    const copagoPct      = tramoActual.copago / 100
     const copagoPaciente = Math.round(totalBase * copagoPct)
-    const cubierto = totalBase - copagoPaciente
+    const cubierto       = totalBase - copagoPaciente
     return { totalBase, copagoPaciente, cubierto }
   }, [seleccionadas, tramoActual])
 
   return (
-    <div className="modulo">
-      <h2>Calculadora FONASA</h2>
-      <p className="subtitulo">Cálculo de copago por tramo para prestaciones de laboratorio</p>
+    <div style={{ position: 'relative', minHeight: '100%' }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #050f1e 0%, #071624 100%)', zIndex: 0 }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(30,58,95,0.5) 0%, transparent 70%)', zIndex: 0, pointerEvents: 'none' }} />
 
-      <div className="tramo-selector">
-        {TRAMOS.map(t => (
-          <button
-            key={t.tramo}
-            className={`btn-tramo ${tramo === t.tramo ? 'activo' : ''}`}
-            onClick={() => setTramo(t.tramo)}
-          >
-            <strong>Tramo {t.tramo}</strong>
-            <small>{t.descripcion}</small>
-            <span className="copago-badge">{t.copago}% copago</span>
-          </button>
-        ))}
-      </div>
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: 940, margin: '0 auto', padding: '32px 24px' }}>
+        <div style={{ marginBottom: 28 }}>
+          <span style={chip}>FONASA · COPAGO POR TRAMO</span>
+          <h1 style={h1st}>Calculadora FONASA</h1>
+          <p style={{ fontSize: 14, color: '#7aaec8' }}>
+            Cálculo de copago por tramo para prestaciones de laboratorio
+          </p>
+        </div>
 
-      <div className="grid-2">
-        <div>
-          <h3>Seleccionar prestaciones</h3>
-          {PRESTACIONES.map(p => (
-            <label key={p.codigo} className={`checklist-item ${seleccion[p.codigo] ? 'checked' : ''}`}>
-              <input
-                type="checkbox"
-                checked={!!seleccion[p.codigo]}
-                onChange={() => toggle(p.codigo)}
-              />
-              <span className="prestacion-info">
-                <span>{p.nombre}</span>
-                <small>{p.codigo}</small>
-              </span>
-              <span className="prestacion-precio">{fmt(p.valorBase)}</span>
-            </label>
+        <div className="tramo-selector" style={{ marginBottom: 20 }}>
+          {TRAMOS.map(t => (
+            <button
+              key={t.tramo}
+              className={`btn-tramo ${tramo === t.tramo ? 'activo' : ''}`}
+              onClick={() => setTramo(t.tramo)}
+            >
+              <strong>Tramo {t.tramo}</strong>
+              <small>{t.descripcion}</small>
+              <span className="copago-badge">{t.copago}% copago</span>
+            </button>
           ))}
         </div>
 
-        <div>
-          <h3>Resumen de cobro</h3>
-          {seleccionadas.length === 0 ? (
-            <p className="vacio">Selecciona prestaciones para calcular</p>
-          ) : (
-            <>
-              <table className="tabla">
-                <tbody>
-                  {seleccionadas.map(p => (
-                    <tr key={p.codigo}>
-                      <td>{p.nombre}</td>
-                      <td>{fmt(p.valorBase)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        <div className="modulo">
+          <div className="grid-2">
+            <div>
+              <h3>Seleccionar prestaciones</h3>
+              {PRESTACIONES.map(p => (
+                <label
+                  key={p.codigo}
+                  className={`checklist-item ${seleccion[p.codigo] ? 'checked' : ''}`}
+                  style={{ justifyContent: 'space-between' }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={!!seleccion[p.codigo]}
+                    onChange={() => toggle(p.codigo)}
+                  />
+                  <span className="prestacion-info">
+                    <span>{p.nombre}</span>
+                    <small>{p.codigo}</small>
+                  </span>
+                  <span className="prestacion-precio">{fmt(p.valorBase)}</span>
+                </label>
+              ))}
+            </div>
 
-              <div className="resumen-fonasa">
-                <div className="resumen-fila">
-                  <span>Total prestaciones</span>
-                  <strong>{fmt(resumen.totalBase)}</strong>
-                </div>
-                <div className="resumen-fila verde">
-                  <span>Cubre FONASA (Tramo {tramo})</span>
-                  <strong>{fmt(resumen.cubierto)}</strong>
-                </div>
-                <div className="resumen-fila naranja">
-                  <span>Copago paciente ({tramoActual.copago}%)</span>
-                  <strong>{fmt(resumen.copagoPaciente)}</strong>
-                </div>
-              </div>
-            </>
-          )}
+            <div>
+              <h3>Resumen de cobro</h3>
+              {seleccionadas.length === 0 ? (
+                <p className="vacio">Selecciona prestaciones para calcular</p>
+              ) : (
+                <>
+                  <table className="tabla">
+                    <tbody>
+                      {seleccionadas.map(p => (
+                        <tr key={p.codigo}>
+                          <td>{p.nombre}</td>
+                          <td style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(p.valorBase)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  <div className="resumen-fonasa">
+                    <div className="resumen-fila">
+                      <span>Total prestaciones</span>
+                      <strong>{fmt(resumen.totalBase)}</strong>
+                    </div>
+                    <div className="resumen-fila verde">
+                      <span>Cubre FONASA (Tramo {tramo})</span>
+                      <strong>{fmt(resumen.cubierto)}</strong>
+                    </div>
+                    <div className="resumen-fila naranja">
+                      <span>Copago paciente ({tramoActual.copago}%)</span>
+                      <strong>{fmt(resumen.copagoPaciente)}</strong>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
