@@ -5,6 +5,7 @@ on:
     branches:
       - claude/review-sampling-project-ECMRt
       - claude/zealous-hamilton-vJSDJ
+      - claude/deploy-clinica-galilea-s8D6l
 
 permissions:
   contents: read
