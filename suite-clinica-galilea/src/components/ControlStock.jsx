@@ -57,10 +57,8 @@ export default function ControlStock() {
   };
 
   const deleteItem = (id) => {
-    if (confirm("¿Eliminar este insumo?")) {
-      setItems((prev) => prev.filter((i) => i.id !== id));
-      setEditingId(null);
-    }
+    setItems((prev) => prev.filter((i) => i.id !== id));
+    setEditingId(null);
   };
 
   const addItem = (data) => {
@@ -196,6 +194,7 @@ export default function ControlStock() {
 }
 
 function ItemModal({ item, onUpdate, onDelete, onClose }) {
+  const [confirming, setConfirming] = useState(false);
   if (!item) return null;
   return (
     <div style={styles.modalBg} onClick={onClose}>
@@ -221,7 +220,15 @@ function ItemModal({ item, onUpdate, onDelete, onClose }) {
             <Field label="Lead time (días)" type="number" value={item.leadTime} onChange={(v) => onUpdate("leadTime", Number(v) || 0)} />
           </div>
           <Field label="Proveedor" value={item.proveedor} onChange={(v) => onUpdate("proveedor", v)} />
-          <button style={styles.deleteBtn} onClick={onDelete}>🗑 Eliminar insumo</button>
+          {!confirming ? (
+            <button style={styles.deleteBtn} onClick={() => setConfirming(true)}>🗑 Eliminar insumo</button>
+          ) : (
+            <div style={styles.confirmRow}>
+              <span style={styles.confirmLabel}>¿Eliminar este insumo?</span>
+              <button style={styles.confirmYes} onClick={onDelete}>Eliminar</button>
+              <button style={styles.confirmNo} onClick={() => setConfirming(false)}>Cancelar</button>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -314,6 +321,10 @@ const styles = {
   fieldLabel: { fontSize: 10, color: "#5a8aaa", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600 },
   fieldInput: { background: "rgba(5,15,30,0.7)", border: "1px solid #1a3a5c", borderRadius: 6, padding: "8px 10px", color: "#cde4f5", fontSize: 13, outline: "none", fontFamily: "inherit", width: "100%", boxSizing: "border-box" },
   deleteBtn: { background: "transparent", border: "1px solid rgba(248,113,113,0.3)", borderRadius: 8, padding: "8px 14px", fontSize: 12, color: "#f87171", cursor: "pointer", fontFamily: "inherit", marginTop: 8 },
+  confirmRow: { display: "flex", alignItems: "center", gap: 8, marginTop: 8, flexWrap: "wrap" },
+  confirmLabel: { fontSize: 12, color: "#f87171", width: "100%", marginBottom: 4 },
+  confirmYes: { background: "rgba(248,113,113,0.15)", border: "1px solid rgba(248,113,113,0.4)", borderRadius: 6, padding: "6px 14px", fontSize: 12, color: "#f87171", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 },
+  confirmNo: { background: "transparent", border: "1px solid #1a3a5c", borderRadius: 6, padding: "6px 14px", fontSize: 12, color: "#7aaec8", cursor: "pointer", fontFamily: "inherit" },
   newForm: { background: "rgba(10,25,48,0.8)", border: "1px solid #34d399", borderRadius: 12, padding: "1rem", display: "flex", flexDirection: "column", gap: 8 },
   saveBtn: { background: "#34d399", border: "none", borderRadius: 6, padding: "8px 14px", fontSize: 12, color: "#0a1929", cursor: "pointer", fontWeight: 700, fontFamily: "inherit" },
   cancelBtn: { background: "transparent", border: "1px solid #1a3a5c", borderRadius: 6, padding: "6px 12px", fontSize: 11, color: "#5a8aaa", cursor: "pointer", fontFamily: "inherit" },

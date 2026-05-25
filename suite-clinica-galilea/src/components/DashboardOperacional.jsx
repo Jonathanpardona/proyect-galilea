@@ -17,6 +17,7 @@ export default function DashboardOperacional() {
   const [showNew, setShowNew] = useState(false);
   const [view, setView] = useState("dia");
   const [loaded, setLoaded] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   useEffect(() => {
     try {
@@ -188,7 +189,14 @@ export default function DashboardOperacional() {
                         ))}
                       </div>
                     )}
-                    <button onClick={() => deleteRegistro(r.id)} style={styles.regDelete}>×</button>
+                    {confirmDeleteId === r.id ? (
+                      <div style={styles.deleteConfirm}>
+                        <button style={styles.confirmYes} onClick={() => deleteRegistro(r.id)}>Sí</button>
+                        <button style={styles.confirmNo} onClick={() => setConfirmDeleteId(null)}>No</button>
+                      </div>
+                    ) : (
+                      <button onClick={() => setConfirmDeleteId(r.id)} style={styles.regDelete} title="Eliminar">×</button>
+                    )}
                   </div>
                 ))
               )}
@@ -351,6 +359,9 @@ const styles = {
   regExams: { display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 },
   examTag: { fontSize: 9, color: "#a78bfa", background: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.25)", borderRadius: 3, padding: "1px 6px" },
   regDelete: { position: "absolute", top: 6, right: 8, background: "none", border: "none", color: "#3d6a8a", fontSize: 16, cursor: "pointer", padding: 0, lineHeight: 1 },
+  deleteConfirm: { position: "absolute", top: 4, right: 6, display: "flex", gap: 4, alignItems: "center" },
+  confirmYes: { background: "rgba(248,113,113,0.15)", border: "1px solid rgba(248,113,113,0.4)", borderRadius: 5, padding: "3px 8px", fontSize: 10, color: "#f87171", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 },
+  confirmNo: { background: "transparent", border: "1px solid #1a3a5c", borderRadius: 5, padding: "3px 8px", fontSize: 10, color: "#7aaec8", cursor: "pointer", fontFamily: "inherit" },
   empty: { textAlign: "center", padding: "2rem", color: "#5a8aaa", fontSize: 12, background: "rgba(10,25,48,0.3)", border: "1px dashed #1a3a5c", borderRadius: 10 },
   chartCard: { background: "rgba(10,25,48,0.6)", border: "1px solid #0e2a45", borderRadius: 12, padding: "1rem" },
   chartTitle: { fontSize: 13, fontWeight: 700, color: "#e8f4ff", marginBottom: "0.75rem" },

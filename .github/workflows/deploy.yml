@@ -2,7 +2,9 @@ name: Deploy Suite Clínica Galilea
 
 on:
   push:
-    branches: [claude/review-sampling-project-ECMRt]
+    branches:
+      - claude/review-sampling-project-ECMRt
+      - claude/zealous-hamilton-vJSDJ
 
 permissions:
   contents: read

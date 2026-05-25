@@ -61,10 +61,8 @@ export default function PipelineB2B() {
   };
 
   const deleteProspect = (id) => {
-    if (confirm("¿Eliminar este prospecto?")) {
-      setProspects((prev) => prev.filter((p) => p.id !== id));
-      setEditingId(null);
-    }
+    setProspects((prev) => prev.filter((p) => p.id !== id));
+    setEditingId(null);
   };
 
   const addProspect = (data) => {
@@ -249,6 +247,7 @@ function ProspectCard({ prospect, onClick, value }) {
 }
 
 function ProspectModal({ prospect, onUpdate, onDelete, onClose }) {
+  const [confirming, setConfirming] = useState(false);
   if (!prospect) return null;
   return (
     <div style={styles.modalBg} onClick={onClose}>
@@ -289,7 +288,15 @@ function ProspectModal({ prospect, onUpdate, onDelete, onClose }) {
             </div>
           </div>
 
-          <button style={styles.deleteBtn} onClick={onDelete}>🗑 Eliminar prospecto</button>
+          {!confirming ? (
+            <button style={styles.deleteBtn} onClick={() => setConfirming(true)}>🗑 Eliminar prospecto</button>
+          ) : (
+            <div style={styles.confirmRow}>
+              <span style={styles.confirmLabel}>¿Eliminar este prospecto?</span>
+              <button style={styles.confirmYes} onClick={onDelete}>Eliminar</button>
+              <button style={styles.confirmNo} onClick={() => setConfirming(false)}>Cancelar</button>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -414,6 +421,10 @@ const styles = {
   valueAmount: { fontSize: 22, fontWeight: 900, color: "#34d399", fontVariantNumeric: "tabular-nums" },
   valueDetail: { fontSize: 11, color: "#7aaec8", marginTop: 2 },
   deleteBtn: { background: "transparent", border: "1px solid rgba(248,113,113,0.3)", borderRadius: 8, padding: "8px 14px", fontSize: 12, color: "#f87171", cursor: "pointer", fontFamily: "inherit" },
+  confirmRow: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" },
+  confirmLabel: { fontSize: 12, color: "#f87171", width: "100%", marginBottom: 4 },
+  confirmYes: { background: "rgba(248,113,113,0.15)", border: "1px solid rgba(248,113,113,0.4)", borderRadius: 6, padding: "6px 14px", fontSize: 12, color: "#f87171", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 },
+  confirmNo: { background: "transparent", border: "1px solid #1a3a5c", borderRadius: 6, padding: "6px 14px", fontSize: 12, color: "#7aaec8", cursor: "pointer", fontFamily: "inherit" },
   newForm: { background: "rgba(10,25,48,0.8)", border: "1px solid #a78bfa", borderRadius: 12, padding: "1rem", display: "flex", flexDirection: "column", gap: 8 },
   newFormHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 },
   saveBtn: { background: "#a78bfa", border: "none", borderRadius: 6, padding: "8px 14px", fontSize: 12, color: "#fff", cursor: "pointer", fontWeight: 700, fontFamily: "inherit" },

@@ -19,6 +19,7 @@ export default function TrackerREAS() {
   const [showNew, setShowNew] = useState(false);
   const [view, setView] = useState("bitacora");
   const [loaded, setLoaded] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   useEffect(() => {
     try {
@@ -181,7 +182,15 @@ ${responsable || "Responsable establecimiento"}`;
                     </div>
                     <div style={styles.cardActions}>
                       <button onClick={() => generarCertificado(r)} style={styles.certBtn}>📄 Certificado</button>
-                      <button onClick={() => deleteRetiro(r.id)} style={styles.deleteBtn}>🗑</button>
+                      {confirmDeleteId === r.id ? (
+                        <div style={styles.deleteConfirm}>
+                          <span style={{ fontSize: 11, color: "#f87171" }}>¿Eliminar?</span>
+                          <button style={styles.confirmYes} onClick={() => deleteRetiro(r.id)}>Sí</button>
+                          <button style={styles.confirmNo} onClick={() => setConfirmDeleteId(null)}>No</button>
+                        </div>
+                      ) : (
+                        <button onClick={() => setConfirmDeleteId(r.id)} style={styles.deleteBtn}>🗑</button>
+                      )}
                     </div>
                   </div>
                 ))
@@ -325,6 +334,9 @@ const styles = {
   cardActions: { display: "flex", gap: 6 },
   certBtn: { flex: 1, background: "transparent", border: "1px solid #38bdf8", borderRadius: 6, padding: "6px", fontSize: 11, color: "#38bdf8", cursor: "pointer", fontFamily: "inherit", fontWeight: 600 },
   deleteBtn: { background: "transparent", border: "1px solid rgba(248,113,113,0.3)", borderRadius: 6, padding: "6px 12px", fontSize: 11, color: "#f87171", cursor: "pointer", fontFamily: "inherit" },
+  deleteConfirm: { display: "flex", gap: 4, alignItems: "center" },
+  confirmYes: { background: "rgba(248,113,113,0.15)", border: "1px solid rgba(248,113,113,0.4)", borderRadius: 5, padding: "4px 10px", fontSize: 11, color: "#f87171", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 },
+  confirmNo: { background: "transparent", border: "1px solid #1a3a5c", borderRadius: 5, padding: "4px 10px", fontSize: 11, color: "#7aaec8", cursor: "pointer", fontFamily: "inherit" },
   configCard: { background: "rgba(10,25,48,0.6)", border: "1px solid #0e2a45", borderRadius: 12, padding: "1rem", display: "flex", flexDirection: "column", gap: 10 },
   tipCard: { background: "rgba(56,189,248,0.06)", border: "1px solid rgba(56,189,248,0.2)", borderRadius: 10, padding: "0.85rem", marginTop: 8 },
   tipTitle: { fontSize: 12, fontWeight: 700, color: "#38bdf8", marginBottom: 6 },
