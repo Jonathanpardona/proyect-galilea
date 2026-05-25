@@ -310,7 +310,7 @@ function KPI({ label, value, color, big }) {
 
 const styles = {
   root: { minHeight: "100vh", background: "#050f1e", fontFamily: "'DM Sans', sans-serif", color: "#cde4f5", position: "relative" },
-  bg: { position: "fixed", inset: 0, background: "radial-gradient(ellipse 70% 50% at 20% 0%, #0a3a4a 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 },
+  bg: { position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 50% at 20% 0%, #0a3a4a 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 },
   header: { position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto", padding: "2rem 1rem 1.5rem" },
   badge: { display: "inline-block", fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "#38bdf8", background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", borderRadius: 4, padding: "2px 8px", marginBottom: 8 },
   title: { fontSize: "1.9rem", fontWeight: 800, margin: 0, color: "#e8f4ff", letterSpacing: "-0.02em", lineHeight: 1.1 },
