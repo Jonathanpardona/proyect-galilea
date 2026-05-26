@@ -126,6 +126,13 @@ const MODULOS = [
 export default function App() {
   const [activo, setActivo] = useState('checklist')
   const [sidebarAbierto, setSidebarAbierto] = useState(false)
+  const [tema, setTema] = useState(() => localStorage.getItem('galilea_tema') ?? 'dark')
+
+  const toggleTema = () => {
+    const nuevo = tema === 'dark' ? 'light' : 'dark'
+    setTema(nuevo)
+    localStorage.setItem('galilea_tema', nuevo)
+  }
 
   const moduloActivo = MODULOS.find(m => m.id === activo)
   const Componente = moduloActivo?.componente
@@ -136,7 +143,7 @@ export default function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-theme={tema}>
       {/* Overlay móvil */}
       {sidebarAbierto && (
         <div className="sidebar-overlay" onClick={() => setSidebarAbierto(false)} />
@@ -177,6 +184,16 @@ export default function App() {
           <span>Suite v2.0 · {MODULOS.length} herramientas</span>
         </div>
       </aside>
+
+      {/* Botón día/noche */}
+      <button
+        className="btn-tema"
+        onClick={toggleTema}
+        aria-label={tema === 'dark' ? 'Modo día' : 'Modo noche'}
+        title={tema === 'dark' ? 'Cambiar a modo día' : 'Cambiar a modo noche'}
+      >
+        {tema === 'dark' ? '☀️' : '🌙'}
+      </button>
 
       {/* Contenido principal */}
       <div className="main-wrap">
