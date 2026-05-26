@@ -210,12 +210,11 @@ export default function DashboardOperacional() {
             <div style={{ width: "100%", height: 220 }}>
               <ResponsiveContainer>
                 <BarChart data={ultimos7} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="2 4" stroke="#0e2a45" />
-                  <XAxis dataKey="label" tick={{ fill: "#5a8aaa", fontSize: 10 }} axisLine={{ stroke: "#1a3a5c" }} />
-                  <YAxis tick={{ fill: "#5a8aaa", fontSize: 10 }} axisLine={{ stroke: "#1a3a5c" }} width={32} />
+                  <CartesianGrid strokeDasharray="2 4" stroke="var(--bdr)" />
+                  <XAxis dataKey="label" tick={{ fill: 'var(--tx2)', fontSize: 10 }} axisLine={{ stroke: 'var(--bdr2)' }} />
+                  <YAxis tick={{ fill: 'var(--tx2)', fontSize: 10 }} axisLine={{ stroke: 'var(--bdr2)' }} width={32} />
                   <Tooltip
-                    contentStyle={{ background: "#050f1e", border: "1px solid #1a3a5c", borderRadius: 8, fontSize: 11 }}
-                    labelStyle={{ color: "#cde4f5" }}
+                    contentStyle={{ background: 'var(--ibg)', border: '1px solid var(--bdr)', borderRadius: 8, color: 'var(--tx1)', fontSize: 13 }}
                   />
                   <Bar dataKey="pacientes" fill="#38bdf8" radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -273,7 +272,7 @@ function NewRegistroForm({ onSave, onCancel }) {
   return (
     <div style={styles.newForm}>
       <div style={styles.newFormHeader}>
-        <strong style={{ fontSize: 13, color: "#e8f4ff" }}>Nuevo registro</strong>
+        <strong style={{ fontSize: 13, color: "var(--tx1)" }}>Nuevo registro</strong>
         <button onClick={onCancel} style={styles.closeBtn}>×</button>
       </div>
       <input type="text" placeholder="Nombre paciente (opcional)" value={paciente}
@@ -286,7 +285,7 @@ function NewRegistroForm({ onSave, onCancel }) {
           </button>
         ))}
       </div>
-      <div style={{ fontSize: 11, color: "#5a8aaa", marginTop: 4 }}>Exámenes (toca para seleccionar):</div>
+      <div style={{ fontSize: 11, color: "var(--tx2)", marginTop: 4 }}>Exámenes (toca para seleccionar):</div>
       <div style={styles.examGrid}>
         {EXAM_CATALOG.map((e) => (
           <button key={e} onClick={() => toggleExam(e)}
@@ -296,7 +295,7 @@ function NewRegistroForm({ onSave, onCancel }) {
         ))}
       </div>
       <div style={styles.inputRow}>
-        <span style={{ color: "#5a8aaa", fontSize: 12 }}>$</span>
+        <span style={{ color: "var(--tx2)", fontSize: 12 }}>$</span>
         <input type="number" placeholder="Monto" value={monto || ""}
           onChange={(e) => setMonto(Number(e.target.value) || 0)} style={{ ...styles.input, paddingLeft: 18 }} />
       </div>
@@ -317,62 +316,62 @@ function KPI({ label, value, color, big }) {
 }
 
 const styles = {
-  root: { minHeight: "100vh", background: "#050f1e", fontFamily: "'DM Sans', sans-serif", color: "#cde4f5", position: "relative" },
-  bg: { position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 50% at 20% 0%, #0a3a4a 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 },
+  root: { minHeight: "100vh", background: "linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%)", fontFamily: "'DM Sans', sans-serif", color: "var(--tx1)", position: "relative" },
+  bg: { position: "absolute", inset: 0, background: "radial-gradient(ellipse 80% 60% at 50% -10%, var(--glow-c) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 },
   header: { position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto", padding: "2rem 1rem 1.5rem" },
   badge: { display: "inline-block", fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "#38bdf8", background: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.25)", borderRadius: 4, padding: "2px 8px", marginBottom: 8 },
-  title: { fontSize: "1.9rem", fontWeight: 800, margin: 0, color: "#e8f4ff", letterSpacing: "-0.02em", lineHeight: 1.1 },
-  subtitle: { fontSize: 13, color: "#5a8aaa", margin: "4px 0 1rem" },
+  title: { fontSize: "1.9rem", fontWeight: 800, margin: 0, color: "var(--tx1)", letterSpacing: "-0.02em", lineHeight: 1.1 },
+  subtitle: { fontSize: 13, color: "var(--tx2)", margin: "4px 0 1rem" },
   dateRow: { display: "flex", gap: 8, alignItems: "center", marginBottom: "1rem" },
-  dateInput: { background: "rgba(5,15,30,0.7)", border: "1px solid #1a3a5c", borderRadius: 6, padding: "6px 10px", color: "#cde4f5", fontSize: 13, outline: "none", fontFamily: "inherit", colorScheme: "dark" },
+  dateInput: { background: "var(--ibg)", border: "1px solid var(--bdr2)", borderRadius: 6, padding: "6px 10px", color: "var(--tx1)", fontSize: 13, outline: "none", fontFamily: "inherit", colorScheme: "dark" },
   todayBtn: { background: "rgba(56,189,248,0.15)", border: "1px solid #38bdf8", borderRadius: 6, padding: "6px 12px", fontSize: 11, color: "#38bdf8", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 },
   kpiGrid: { display: "flex", gap: 6, marginBottom: 6 },
-  kpi: { flex: 1, background: "rgba(10,25,48,0.6)", border: "1px solid #0e2a45", borderRadius: 10, padding: "0.65rem 0.7rem" },
+  kpi: { flex: 1, background: "var(--card)", border: "1px solid var(--bdr)", borderRadius: 10, padding: "0.65rem 0.7rem" },
   kpiBig: { padding: "0.85rem" },
-  kpiLabel: { fontSize: 9, color: "#5a8aaa", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 },
+  kpiLabel: { fontSize: 9, color: "var(--tx2)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 },
   kpiValue: { fontSize: 16, fontWeight: 800, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums", lineHeight: 1 },
   alertList: { display: "flex", flexDirection: "column", gap: 6, marginTop: "0.85rem" },
   alert: { padding: "8px 12px", borderRadius: 8, border: "1px solid", fontSize: 12, fontWeight: 600 },
   main: { position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto", padding: "0 1rem 3rem", display: "flex", flexDirection: "column", gap: "1rem" },
-  tabs: { display: "flex", gap: 4, padding: 4, background: "rgba(10,25,48,0.5)", borderRadius: 10, border: "1px solid #0e2a45" },
-  tab: { flex: 1, background: "transparent", border: "none", padding: "8px 12px", fontSize: 12, color: "#5a8aaa", cursor: "pointer", borderRadius: 6, fontWeight: 600, fontFamily: "inherit" },
+  tabs: { display: "flex", gap: 4, padding: 4, background: "var(--card)", borderRadius: 10, border: "1px solid var(--bdr)" },
+  tab: { flex: 1, background: "transparent", border: "none", padding: "8px 12px", fontSize: 12, color: "var(--tx2)", cursor: "pointer", borderRadius: 6, fontWeight: 600, fontFamily: "inherit" },
   tabActive: { background: "rgba(56,189,248,0.15)", color: "#38bdf8" },
   addBtn: { background: "rgba(56,189,248,0.15)", border: "1px solid #38bdf8", borderRadius: 10, padding: "12px", fontSize: 13, color: "#38bdf8", cursor: "pointer", fontWeight: 700, fontFamily: "inherit" },
-  newForm: { background: "rgba(10,25,48,0.8)", border: "1px solid #38bdf8", borderRadius: 12, padding: "1rem", display: "flex", flexDirection: "column", gap: 10 },
+  newForm: { background: "var(--card)", border: "1px solid #38bdf8", borderRadius: 12, padding: "1rem", display: "flex", flexDirection: "column", gap: 10 },
   newFormHeader: { display: "flex", justifyContent: "space-between", alignItems: "center" },
-  closeBtn: { background: "none", border: "none", color: "#5a8aaa", fontSize: 22, cursor: "pointer", padding: 0, lineHeight: 1 },
-  input: { background: "rgba(5,15,30,0.7)", border: "1px solid #1a3a5c", borderRadius: 6, padding: "8px 10px", color: "#cde4f5", fontSize: 13, outline: "none", fontFamily: "inherit", width: "100%", boxSizing: "border-box" },
+  closeBtn: { background: "none", border: "none", color: "var(--tx2)", fontSize: 22, cursor: "pointer", padding: 0, lineHeight: 1 },
+  input: { background: "var(--ibg)", border: "1px solid var(--bdr2)", borderRadius: 6, padding: "8px 10px", color: "var(--tx1)", fontSize: 13, outline: "none", fontFamily: "inherit", width: "100%", boxSizing: "border-box" },
   inputRow: { position: "relative", display: "flex", alignItems: "center" },
   previsionalRow: { display: "flex", gap: 4 },
-  prevBtn: { flex: 1, background: "rgba(5,15,30,0.6)", border: "1px solid #1a3a5c", borderRadius: 6, padding: "6px 8px", fontSize: 11, color: "#7aaec8", cursor: "pointer", fontFamily: "inherit", fontWeight: 600 },
+  prevBtn: { flex: 1, background: "var(--ibg)", border: "1px solid var(--bdr2)", borderRadius: 6, padding: "6px 8px", fontSize: 11, color: "var(--tx2)", cursor: "pointer", fontFamily: "inherit", fontWeight: 600 },
   prevBtnActive: { background: "rgba(56,189,248,0.15)", borderColor: "#38bdf8", color: "#38bdf8" },
   examGrid: { display: "flex", flexWrap: "wrap", gap: 4 },
-  examChip: { background: "rgba(5,15,30,0.6)", border: "1px solid #1a3a5c", borderRadius: 4, padding: "4px 8px", fontSize: 10, color: "#7aaec8", cursor: "pointer", fontFamily: "inherit" },
+  examChip: { background: "var(--ibg)", border: "1px solid var(--bdr2)", borderRadius: 4, padding: "4px 8px", fontSize: 10, color: "var(--tx2)", cursor: "pointer", fontFamily: "inherit" },
   examChipActive: { background: "rgba(167,139,250,0.15)", borderColor: "#a78bfa", color: "#a78bfa", fontWeight: 600 },
   saveBtn: { background: "#38bdf8", border: "none", borderRadius: 6, padding: "10px 14px", fontSize: 13, color: "#fff", cursor: "pointer", fontWeight: 700, fontFamily: "inherit", marginTop: 6 },
   regList: { display: "flex", flexDirection: "column", gap: 6 },
-  regCard: { position: "relative", background: "rgba(10,25,48,0.6)", border: "1px solid #0e2a45", borderRadius: 10, padding: "0.75rem 0.9rem" },
+  regCard: { position: "relative", background: "var(--card)", border: "1px solid var(--bdr)", borderRadius: 10, padding: "0.75rem 0.9rem" },
   regTop: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10, marginBottom: 6 },
-  regName: { fontSize: 13, fontWeight: 700, color: "#e8f4ff" },
-  regMeta: { fontSize: 11, color: "#5a8aaa", marginTop: 2 },
+  regName: { fontSize: 13, fontWeight: 700, color: "var(--tx1)" },
+  regMeta: { fontSize: 11, color: "var(--tx2)", marginTop: 2 },
   regAmount: { fontSize: 14, fontWeight: 800, color: "#34d399", fontVariantNumeric: "tabular-nums" },
   regExams: { display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 },
   examTag: { fontSize: 9, color: "#a78bfa", background: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.25)", borderRadius: 3, padding: "1px 6px" },
-  regDelete: { position: "absolute", top: 6, right: 8, background: "none", border: "none", color: "#3d6a8a", fontSize: 16, cursor: "pointer", padding: 0, lineHeight: 1 },
+  regDelete: { position: "absolute", top: 6, right: 8, background: "none", border: "none", color: "var(--tx3)", fontSize: 16, cursor: "pointer", padding: 0, lineHeight: 1 },
   deleteConfirm: { position: "absolute", top: 4, right: 6, display: "flex", gap: 4, alignItems: "center" },
   confirmYes: { background: "rgba(248,113,113,0.15)", border: "1px solid rgba(248,113,113,0.4)", borderRadius: 5, padding: "3px 8px", fontSize: 10, color: "#f87171", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 },
-  confirmNo: { background: "transparent", border: "1px solid #1a3a5c", borderRadius: 5, padding: "3px 8px", fontSize: 10, color: "#7aaec8", cursor: "pointer", fontFamily: "inherit" },
-  empty: { textAlign: "center", padding: "2rem", color: "#5a8aaa", fontSize: 12, background: "rgba(10,25,48,0.3)", border: "1px dashed #1a3a5c", borderRadius: 10 },
-  chartCard: { background: "rgba(10,25,48,0.6)", border: "1px solid #0e2a45", borderRadius: 12, padding: "1rem" },
-  chartTitle: { fontSize: 13, fontWeight: 700, color: "#e8f4ff", marginBottom: "0.75rem" },
-  weekSummary: { display: "flex", flexDirection: "column", gap: 4, marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid rgba(14,42,69,0.5)", fontSize: 12, color: "#7aaec8" },
-  examCard: { background: "rgba(10,25,48,0.6)", border: "1px solid #0e2a45", borderRadius: 12, padding: "1rem" },
+  confirmNo: { background: "transparent", border: "1px solid var(--bdr2)", borderRadius: 5, padding: "3px 8px", fontSize: 10, color: "var(--tx2)", cursor: "pointer", fontFamily: "inherit" },
+  empty: { textAlign: "center", padding: "2rem", color: "var(--tx2)", fontSize: 12, background: "var(--card)", border: "1px dashed var(--bdr2)", borderRadius: 10 },
+  chartCard: { background: "var(--card)", border: "1px solid var(--bdr)", borderRadius: 12, padding: "1rem" },
+  chartTitle: { fontSize: 13, fontWeight: 700, color: "var(--tx1)", marginBottom: "0.75rem" },
+  weekSummary: { display: "flex", flexDirection: "column", gap: 4, marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid var(--bdr)", fontSize: 12, color: "var(--tx2)" },
+  examCard: { background: "var(--card)", border: "1px solid var(--bdr)", borderRadius: 12, padding: "1rem" },
   examRanking: { display: "flex", flexDirection: "column", gap: 8 },
   examRow: { display: "flex", alignItems: "center", gap: 10 },
   examRank: { fontSize: 11, fontWeight: 800, color: "#fbbf24", minWidth: 22 },
   examMain: { flex: 1, minWidth: 0 },
-  examName: { fontSize: 12, color: "#cde4f5", marginBottom: 4 },
-  examBar: { height: 4, background: "#0e2a45", borderRadius: 2, overflow: "hidden" },
+  examName: { fontSize: 12, color: "var(--tx1)", marginBottom: 4 },
+  examBar: { height: 4, background: "var(--bdr)", borderRadius: 2, overflow: "hidden" },
   examBarFill: { height: "100%", background: "linear-gradient(90deg, #38bdf8, #a78bfa)", borderRadius: 2, transition: "width 0.4s" },
   examCount: { fontSize: 13, fontWeight: 700, color: "#38bdf8", fontVariantNumeric: "tabular-nums" },
 };
