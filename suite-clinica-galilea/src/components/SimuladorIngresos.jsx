@@ -1,5 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+
+const KEY = 'sim_ingresos_v1'
 
 const EXAMENES = [
   { nombre: 'Hemograma',         precio: 4500  },
@@ -12,11 +14,37 @@ const EXAMENES = [
   { nombre: 'Glicemia',          precio: 3200  },
 ]
 
+const CANTIDADES_DEFAULT = Object.fromEntries(EXAMENES.map(e => [e.nombre, 0]))
 const fmt = (n) => n.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
 
 export default function SimuladorIngresos() {
-  const [cantidades, setCantidades] = useState(() => Object.fromEntries(EXAMENES.map(e => [e.nombre, 0])))
-  const [diasMes, setDiasMes]       = useState(22)
+  const [loaded, setLoaded] = useState(false)
+  const [cantidades, setCantidades] = useState(() => {
+    try {
+      const s = localStorage.getItem(KEY)
+      if (s) {
+        const parsed = JSON.parse(s)
+        return parsed.cantidades ?? CANTIDADES_DEFAULT
+      }
+    } catch {}
+    return CANTIDADES_DEFAULT
+  })
+  const [diasMes, setDiasMes] = useState(() => {
+    try {
+      const s = localStorage.getItem(KEY)
+      if (s) {
+        const parsed = JSON.parse(s)
+        return parsed.diasMes ?? 22
+      }
+    } catch {}
+    return 22
+  })
+
+  useEffect(() => { setLoaded(true) }, [])
+  useEffect(() => {
+    if (!loaded) return
+    localStorage.setItem(KEY, JSON.stringify({ cantidades, diasMes }))
+  }, [cantidades, diasMes, loaded])
 
   const set = (nombre, val) => setCantidades(prev => ({ ...prev, [nombre]: Math.max(0, Number(val)) }))
 

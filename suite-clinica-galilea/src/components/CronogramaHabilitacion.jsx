@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+const KEY = 'cronograma_v1'
 
 const TAREAS_INICIALES = [
   { id: 1, nombre: 'Solicitud de habilitación SEREMI',    responsable: 'Director',       inicio: 1, duracion: 2, estado: 'completado' },
@@ -29,7 +31,19 @@ const ESTADO_TEXT = {
 const ESTADOS = ['pendiente', 'en-curso', 'completado']
 
 export default function CronogramaHabilitacion() {
-  const [tareas, setTareas] = useState(TAREAS_INICIALES)
+  const [loaded, setLoaded] = useState(false)
+  const [tareas, setTareas] = useState(() => {
+    try {
+      const s = localStorage.getItem(KEY)
+      return s ? JSON.parse(s) : TAREAS_INICIALES
+    } catch { return TAREAS_INICIALES }
+  })
+
+  useEffect(() => { setLoaded(true) }, [])
+  useEffect(() => {
+    if (!loaded) return
+    localStorage.setItem(KEY, JSON.stringify(tareas))
+  }, [tareas, loaded])
 
   const setEstado   = (id, estado) => setTareas(prev => prev.map(t => t.id === id ? { ...t, estado } : t))
   const completadas = tareas.filter(t => t.estado === 'completado').length

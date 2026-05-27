@@ -1,5 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+
+const KEY = 'capex_v1'
 
 const CATEGORIAS_COLOR = {
   Equipamiento:    '#3b82f6',
@@ -20,25 +22,37 @@ const ITEMS_INICIALES = [
 
 const fmt = (n) => n.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
 
-let nextId = ITEMS_INICIALES.length + 1
-
 export default function PlanificadorCapex() {
-  const [items, setItems] = useState(ITEMS_INICIALES)
+  const [loaded, setLoaded] = useState(false)
+  const [items, setItems] = useState(() => {
+    try {
+      const s = localStorage.getItem(KEY)
+      return s ? JSON.parse(s) : ITEMS_INICIALES
+    } catch { return ITEMS_INICIALES }
+  })
   const [nuevo, setNuevo] = useState({ nombre: '', categoria: 'Equipamiento', costo: '', mes: 1 })
+
+  useEffect(() => { setLoaded(true) }, [])
+  useEffect(() => {
+    if (!loaded) return
+    localStorage.setItem(KEY, JSON.stringify(items))
+  }, [items, loaded])
 
   const agregar = () => {
     if (!nuevo.nombre || !nuevo.costo) return
-    setItems(prev => [...prev, { ...nuevo, id: nextId++, costo: Number(nuevo.costo) }])
+    // nextId calculado desde el estado actual para no perder sincronía con localStorage
+    const nextId = items.reduce((max, i) => Math.max(max, i.id), 0) + 1
+    setItems(prev => [...prev, { ...nuevo, id: nextId, costo: Number(nuevo.costo) }])
     setNuevo({ nombre: '', categoria: 'Equipamiento', costo: '', mes: 1 })
   }
   const eliminar = (id) => setItems(prev => prev.filter(i => i.id !== id))
 
-  const total        = useMemo(() => items.reduce((s, i) => s + i.costo, 0), [items])
-  const porCategoria = useMemo(() => {
+  const total        = items.reduce((s, i) => s + i.costo, 0)
+  const porCategoria = (() => {
     const map = {}
     items.forEach(i => { map[i.categoria] = (map[i.categoria] || 0) + i.costo })
     return Object.entries(map).map(([name, value]) => ({ name, value }))
-  }, [items])
+  })()
 
   const ttip = { background: 'var(--ibg)', border: '1px solid var(--bdr)', borderRadius: 8, color: 'var(--tx1)', fontSize: 13 }
 

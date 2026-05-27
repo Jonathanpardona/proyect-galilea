@@ -1,4 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+
+const KEY = 'fonasa_v1'
 
 const TRAMOS = [
   { tramo: 'A', descripcion: 'Indigente / sin ingresos',        copago: 0  },
@@ -23,8 +25,27 @@ const PRESTACIONES = [
 const fmt = (n) => n.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
 
 export default function CalculadoraFonasa() {
-  const [tramo,     setTramo]     = useState('B')
-  const [seleccion, setSeleccion] = useState({})
+  const [loaded, setLoaded] = useState(false)
+  const [tramo, setTramo] = useState(() => {
+    try {
+      const s = localStorage.getItem(KEY)
+      if (s) return JSON.parse(s).tramo ?? 'B'
+    } catch {}
+    return 'B'
+  })
+  const [seleccion, setSeleccion] = useState(() => {
+    try {
+      const s = localStorage.getItem(KEY)
+      if (s) return JSON.parse(s).seleccion ?? {}
+    } catch {}
+    return {}
+  })
+
+  useEffect(() => { setLoaded(true) }, [])
+  useEffect(() => {
+    if (!loaded) return
+    localStorage.setItem(KEY, JSON.stringify({ tramo, seleccion }))
+  }, [tramo, seleccion, loaded])
 
   const tramoActual   = TRAMOS.find(t => t.tramo === tramo)
   const toggle        = (codigo) => setSeleccion(prev => ({ ...prev, [codigo]: !prev[codigo] }))
