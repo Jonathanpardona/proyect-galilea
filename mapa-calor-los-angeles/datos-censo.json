@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "comuna": "Los Ángeles",
+    "provincia": "Biobío",
+    "region": "Biobío",
+    "pais": "Chile",
+    "fuente_principal": "Censo de Población y Vivienda 2024 - INE Chile",
+    "fecha_actualizacion": "2026-06-13",
+    "notas": "Los totales comunales provienen del Censo 2024 (INE). La distribución por sector y los índices socioeconómico/adulto mayor son ESTIMACIONES de planificación construidas a partir de prensa local, reportes comunales BCN y patrones urbanos conocidos. Las coordenadas son centroides APROXIMADOS de cada sector, no polígonos censales oficiales."
+  },
+  "totales_comuna_censo2024": {
+    "poblacion_total": 219441,
+    "hombres": 105436,
+    "mujeres": 114005,
+    "edad_promedio": 37.6,
+    "poblacion_urbana_pct": 74.7,
+    "poblacion_rural_pct": 25.3,
+    "poblacion_urbana_estimada": 163922,
+    "indice_masculinidad": 92.5,
+    "ranking_region": "2ª comuna más poblada de la Región del Biobío (después de Concepción)",
+    "participacion_provincial": "Comuna más poblada de la provincia de Biobío (~13,6% del total regional)"
+  },
+  "referencias_demograficas": {
+    "adulto_mayor_60mas_nacional_2024_pct": 19.8,
+    "tendencia": "Envejecimiento sostenido de la población (INE 2024)"
+  },
+  "leyenda_indices": {
+    "nse": "Índice socioeconómico relativo del sector, escala 1 (bajo) a 5 (alto). Estimación de planificación.",
+    "adulto_mayor": "Índice relativo de concentración de población 60+ y demanda de salud crónica, escala 1 (baja) a 5 (alta). Estimación de planificación.",
+    "poblacion_est": "Población estimada del sector (distribución de la población urbana comunal)."
+  },
+  "sectores": [
+    { "nombre": "Centro (Plaza de Armas)",            "lat": -37.4697, "lon": -72.3536, "poblacion_est": 14000, "nse": 3.0, "adulto_mayor": 3.5 },
+    { "nombre": "Paillihue",                           "lat": -37.4640, "lon": -72.3290, "poblacion_est": 50000, "nse": 2.5, "adulto_mayor": 2.5 },
+    { "nombre": "Sector Sur / 21 de Mayo",             "lat": -37.4880, "lon": -72.3470, "poblacion_est": 14000, "nse": 2.0, "adulto_mayor": 2.5 },
+    { "nombre": "Villa Los Ríos",                      "lat": -37.4900, "lon": -72.3400, "poblacion_est": 8000,  "nse": 2.0, "adulto_mayor": 2.0 },
+    { "nombre": "Parque Lauquén",                      "lat": -37.4920, "lon": -72.3560, "poblacion_est": 7000,  "nse": 3.0, "adulto_mayor": 2.0 },
+    { "nombre": "Jardines de la República (G. Mistral)","lat": -37.4560, "lon": -72.3470, "poblacion_est": 12000, "nse": 3.5, "adulto_mayor": 3.0 },
+    { "nombre": "Villa Cataluña",                      "lat": -37.4570, "lon": -72.3380, "poblacion_est": 6000,  "nse": 3.0, "adulto_mayor": 2.5 },
+    { "nombre": "Plaza España / Sector Hospital",      "lat": -37.4640, "lon": -72.3590, "poblacion_est": 8000,  "nse": 3.5, "adulto_mayor": 3.5 },
+    { "nombre": "Sector Norte (Av. Alemania)",         "lat": -37.4560, "lon": -72.3590, "poblacion_est": 9000,  "nse": 3.5, "adulto_mayor": 3.0 },
+    { "nombre": "Nororiente / El Retiro",              "lat": -37.4520, "lon": -72.3330, "poblacion_est": 5000,  "nse": 3.0, "adulto_mayor": 2.5 },
+    { "nombre": "Sector Poniente (Av. Las Industrias)","lat": -37.4700, "lon": -72.3680, "poblacion_est": 7000,  "nse": 2.5, "adulto_mayor": 2.5 },
+    { "nombre": "Sector Oriente (Camino a Antuco)",    "lat": -37.4720, "lon": -72.3300, "poblacion_est": 5000,  "nse": 3.0, "adulto_mayor": 2.5 },
+    { "nombre": "Condominios Antuco / Montreal",       "lat": -37.4950, "lon": -72.3500, "poblacion_est": 6000,  "nse": 4.0, "adulto_mayor": 2.0 },
+    { "nombre": "Patria Vieja / Siglo XXI",            "lat": -37.4830, "lon": -72.3350, "poblacion_est": 10000, "nse": 2.5, "adulto_mayor": 2.5 },
+    { "nombre": "Santa Fe (localidad NO)",             "lat": -37.4250, "lon": -72.4150, "poblacion_est": 4000,  "nse": 2.0, "adulto_mayor": 3.0 }
+  ]
+}
