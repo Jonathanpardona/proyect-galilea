@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mapa de Calor · Factibilidad de Clientes · Clínica Galilea · Los Ángeles, Chile</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.css" />
   <style>
     :root{
       --bg:#0f172a; --panel:#1e293b; --panel2:#273449; --txt:#e2e8f0;
@@ -49,7 +50,7 @@
       <div class="grad"></div>
       <div style="display:flex;justify-content:space-between"><span>Bajo</span><span>Alto</span></div>
       <div style="margin-top:6px">⭐ Tu clínica · 🏥 Hospital · ➕ CESFAM · ⚕️ Privado</div>
-      <div style="margin-top:2px">Arrastra ⭐ para recalcular según la ubicación.</div>
+      <div style="margin-top:2px">🔍 Busca la dirección o arrastra ⭐ para recalcular.</div>
     </div>
   </div>
   <div id="side">
@@ -88,6 +89,11 @@
     </label>
     <button id="reset" class="sec">↺ Restablecer valores</button>
 
+    <h2>Alcance de la ubicación <span class="tag">catchment</span></h2>
+    <p class="sub" style="margin:0 0 8px">Población modelada alcanzable por radio (línea recta) desde ⭐, y competidores dentro del radio primario (2 km).</p>
+    <div id="reach"></div>
+    <p class="note" id="clinicPos"></p>
+
     <h2>Ranking de sectores</h2>
     <div id="rank" class="rank"></div>
 
@@ -106,6 +112,7 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.js"></script>
 <script>
 /* ============================================================
    DATOS — Censo 2024 (INE) + estimaciones de sector
@@ -151,20 +158,39 @@ const PRIVADOS = FACILITIES.filter(f => f.tipo === "privado");
 /* ============================================================
    MAPA BASE
    ============================================================ */
-const center = [-37.4697, -72.3536];
+const center = [-37.4697, -72.3536];                 // centro de la ciudad (vista del mapa)
+const CLINIC0 = [-37.4668, -72.3338];                // estimación inicial: sector Galilea / Av. P. A. Hurtado (AFINAR con el buscador)
+const RINGS = [1000, 2000, 3000];                    // anillos de alcance (metros)
+const PRIMARY_R = 2000;                               // radio primario para contar competidores
+
 const map = L.map('map', { zoomControl:true }).setView(center, 13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
+/* Buscador de direcciones (geocodificación en el navegador, vía Nominatim/OSM).
+   Escribe "Australian Southern College, Los Ángeles" o la dirección para fijar la clínica. */
+const geocoder = L.Control.geocoder({
+  defaultMarkGeocode: false,
+  placeholder: 'Buscar dirección / lugar…',
+  geocoder: L.Control.Geocoder.nominatim({ geocodingQueryParams: { countrycodes: 'cl', viewbox: '-72.45,-37.40,-72.28,-37.51', bounded: 1 } })
+}).addTo(map);
+geocoder.on('markgeocode', e => {
+  const c = e.geocode.center;
+  clinic.setLatLng(c); map.setView(c, 15); recompute();
+});
+
 /* Marcador arrastrable de la clínica */
 const clinicIcon = L.divIcon({
   className:'', html:'<div style="font-size:28px;filter:drop-shadow(0 1px 3px #000)">⭐</div>',
   iconSize:[28,28], iconAnchor:[14,14]
 });
-const clinic = L.marker(center, { draggable:true, icon:clinicIcon, title:"Ubicación prevista de la clínica (arrástrame)" }).addTo(map);
-clinic.bindTooltip("Clínica Galilea (ubicación prevista) — arrástrame", {direction:'top'});
+const clinic = L.marker(CLINIC0, { draggable:true, icon:clinicIcon, title:"Ubicación prevista de la clínica (arrástrame o usa el buscador)" }).addTo(map);
+clinic.bindTooltip("Clínica Galilea (ubicación estimada) — arrástrame o búscala", {direction:'top'});
+
+/* Anillos de alcance alrededor de la clínica */
+const ringsLayer = L.layerGroup().addTo(map);
 
 let heat = L.heatLayer([], { radius:38, blur:28, max:1.0, minOpacity:0.25,
   gradient:{0.2:'#2563eb',0.4:'#22c55e',0.6:'#eab308',0.8:'#f97316',1.0:'#ef4444'} }).addTo(map);
@@ -252,6 +278,44 @@ function recompute(){
 
   heat.setLatLngs(pts);
   renderRank();
+  renderReach(cll);
+  drawRings(cll);
+}
+
+// Dibuja los anillos de alcance
+function drawRings(cll){
+  ringsLayer.clearLayers();
+  const colors = ['#22c55e','#eab308','#f97316'];
+  RINGS.forEach((r,i)=>{
+    L.circle(cll, { radius:r, color:colors[i], weight:1.5, fill:false, dashArray:'5,6' })
+     .bindTooltip(`${r/1000} km`, {permanent:false}).addTo(ringsLayer);
+  });
+}
+
+// Población modelada alcanzable por radio + competidores en radio primario
+function renderReach(cll){
+  const totalPop = SECTORES.reduce((a,s)=>a+s.pop,0);
+  const rows = RINGS.map(r=>{
+    const pop = SECTORES.reduce((a,s)=>
+      a + (map.distance(cll, L.latLng(s.lat,s.lon)) <= r ? s.pop : 0), 0);
+    const pct = Math.round(100*pop/totalPop);
+    return `<div class="row"><div class="bar" style="width:${Math.max(6,pct)}%"></div>
+      <span class="nm">≤ ${r/1000} km</span>
+      <span class="sc">${pct}%</span></div>
+      <div class="note" style="margin:-2px 0 6px">${pop.toLocaleString('es-CL')} hab. modelados</div>`;
+  }).join('');
+
+  const compe = FACILITIES.filter(f=>f.tipo==='privado' &&
+    map.distance(cll, L.latLng(f.lat,f.lon)) <= PRIMARY_R)
+    .map(f=>`${f.nombre} (${Math.round(map.distance(cll,L.latLng(f.lat,f.lon)))} m)`);
+  const compHtml = compe.length
+    ? `<div class="note" style="color:#fca5a5">⚕️ Competencia privada en ${PRIMARY_R/1000} km: ${compe.join('; ')}</div>`
+    : `<div class="note" style="color:#86efac">✓ Sin competencia privada directa dentro de ${PRIMARY_R/1000} km</div>`;
+
+  document.getElementById('reach').innerHTML = '<div class="rank">'+rows+'</div>'+compHtml;
+  const ll = clinic.getLatLng();
+  document.getElementById('clinicPos').textContent =
+    `Posición ⭐: ${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}`;
 }
 
 function renderRank(){
@@ -283,7 +347,7 @@ document.getElementById('showFac').addEventListener('change', e=>{
 document.getElementById('reset').addEventListener('click',()=>{
   const d={wPop:45,wNse:30,wAm:25,wProx:60,wComp:35};
   for(const k in d){ document.getElementById(k).value=d[k]; document.getElementById(k+'V').textContent=d[k]+'%'; }
-  clinic.setLatLng(center); map.setView(center,13); recompute();
+  clinic.setLatLng(CLINIC0); map.setView(center,13); recompute();
 });
 clinic.on('drag', recompute);
 

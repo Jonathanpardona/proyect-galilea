@@ -17,6 +17,12 @@ base (OpenStreetMap) y las librerías Leaflet desde CDN.
 
 ## Qué puedes hacer
 
+- 🔍 **Buscar la dirección exacta** (buscador 🔍 arriba a la derecha del mapa): escribe
+  *"Australian Southern College, Los Ángeles"* o *"Av. Padre Alberto Hurtado 195"* y la ⭐
+  se posiciona ahí. La ubicación prevista es **junto a la Iglesia Adventista Galilea, sector
+  Av. Padre Alberto Hurtado** (el marcador parte en una estimación de esa zona; afínala con el buscador).
+- 📏 **Análisis de alcance (catchment):** anillos de 1/2/3 km y **% de población alcanzable**
+  desde la clínica, más los competidores privados dentro del radio primario (2 km).
 - ⭐ **Arrastrar el marcador de tu clínica** para ver cómo cambia la captación según su ubicación.
 - 🎚️ **Ajustar los pesos** del modelo: densidad poblacional, nivel socioeconómico,
   adulto mayor (demanda crónica), cercanía y **saturación por competencia privada**.
@@ -77,4 +83,10 @@ para producir una mancha realista.
   los **índices socioeconómico y de adulto mayor** y las **coordenadas de sector** son
   **estimaciones de planificación** (centroides aproximados, no polígonos censales por manzana).
 - Úsalo como apoyo a la decisión de localización, no como dato censal oficial a nivel de manzana.
-  Para precisión por zona censal, integrar la cartografía oficial del INE (GeoJSON REDATAM).
+- El **buscador** geocodifica con Nominatim/OpenStreetMap desde tu navegador; si una dirección
+  no aparece, arrastra la ⭐ a mano.
+- **Polígonos oficiales del INE (REDATAM):** la cartografía por zona censal del Censo 2024 no es
+  descargable desde el entorno donde se generó este proyecto (red restringida), por lo que el
+  alcance se calcula con los centroides de sector y radios en línea recta (no isócronas de manejo).
+  Si más adelante quieres precisión por manzana, se puede cargar el GeoJSON oficial del INE como
+  capa adicional en el navegador.
