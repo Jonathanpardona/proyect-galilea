@@ -48,7 +48,8 @@
       <b>Potencial de captación de pacientes</b>
       <div class="grad"></div>
       <div style="display:flex;justify-content:space-between"><span>Bajo</span><span>Alto</span></div>
-      <div style="margin-top:6px">🏥 Arrastra el marcador de la clínica para recalcular.</div>
+      <div style="margin-top:6px">⭐ Tu clínica · 🏥 Hospital · ➕ CESFAM · ⚕️ Privado</div>
+      <div style="margin-top:2px">Arrastra ⭐ para recalcular según la ubicación.</div>
     </div>
   </div>
   <div id="side">
@@ -79,7 +80,12 @@
       <input id="wAm" type="range" min="0" max="100" value="25" />
       <label>Importancia de la cercanía a la clínica <span id="wProxV">60%</span></label>
       <input id="wProx" type="range" min="0" max="100" value="60" />
+      <label>Saturación por competencia privada <span id="wCompV">35%</span></label>
+      <input id="wComp" type="range" min="0" max="100" value="35" />
     </div>
+    <label style="display:flex;gap:8px;align-items:center;font-size:12px;margin-bottom:8px;color:var(--muted)">
+      <input id="showFac" type="checkbox" checked /> Mostrar red de salud existente (hospital · CESFAM · privados)
+    </label>
     <button id="reset" class="sec">↺ Restablecer valores</button>
 
     <h2>Ranking de sectores</h2>
@@ -126,6 +132,21 @@ const SECTORES = [
 
 const MAX_POP = Math.max(...SECTORES.map(s => s.pop));
 const PROX_SCALE = 2600; // metros: escala de decaimiento por distancia
+const COMP_SCALE = 1500; // metros: alcance de saturación por competencia privada
+
+/* Infraestructura de salud existente (direcciones reales; coordenadas aproximadas).
+   tipo: hospital=alta complejidad público · cesfam=APS pública (FONASA, complementaria)
+        privado=competencia directa (Isapre/Fonasa libre elección) */
+const FACILITIES = [
+  { nombre:"Hospital Base Dr. Víctor Ríos Ruiz", tipo:"hospital", dir:"Av. Ricardo Vicuña 147", lat:-37.4628, lon:-72.3468 },
+  { nombre:"Centro Médico Andes Salud",          tipo:"privado",  dir:"Av. Alemania 1129",       lat:-37.4576, lon:-72.3556 },
+  { nombre:"Centro Médico y Dental RedSalud",    tipo:"privado",  dir:"Centro de Los Ángeles",   lat:-37.4688, lon:-72.3518 },
+  { nombre:"CESFAM Norte",                       tipo:"cesfam",   dir:"Av. Los Ángeles 810, Orompello", lat:-37.4572, lon:-72.3502 },
+  { nombre:"CESFAM Sur Paillihue",               tipo:"cesfam",   dir:"Juan Guzmán 437, Escritores de Chile", lat:-37.4762, lon:-72.3332 },
+  { nombre:"CESFAM Dr. Segismundo Iturra Taito", tipo:"cesfam",   dir:"Sector poniente",         lat:-37.4694, lon:-72.3604 },
+  { nombre:"CESFAM Rural Santa Fe",              tipo:"cesfam",   dir:"Noemí Escobar López s/n, Santa Fe", lat:-37.4252, lon:-72.4148 }
+];
+const PRIVADOS = FACILITIES.filter(f => f.tipo === "privado");
 
 /* ============================================================
    MAPA BASE
@@ -139,8 +160,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 /* Marcador arrastrable de la clínica */
 const clinicIcon = L.divIcon({
-  className:'', html:'<div style="font-size:26px;filter:drop-shadow(0 1px 2px #000)">🏥</div>',
-  iconSize:[26,26], iconAnchor:[13,13]
+  className:'', html:'<div style="font-size:28px;filter:drop-shadow(0 1px 3px #000)">⭐</div>',
+  iconSize:[28,28], iconAnchor:[14,14]
 });
 const clinic = L.marker(center, { draggable:true, icon:clinicIcon, title:"Ubicación prevista de la clínica (arrástrame)" }).addTo(map);
 clinic.bindTooltip("Clínica Galilea (ubicación prevista) — arrástrame", {direction:'top'});
@@ -163,6 +184,21 @@ const sectorMarkers = SECTORES.map(s => {
   return m;
 });
 
+/* Capa de salud existente */
+const FAC_STYLE = {
+  hospital:{ emoji:'🏥', label:'Hospital (alta complejidad, público)' },
+  cesfam:  { emoji:'➕', label:'CESFAM (APS pública · FONASA)' },
+  privado: { emoji:'⚕️', label:'Centro privado (competencia directa)' }
+};
+const facLayer = L.layerGroup().addTo(map);
+FACILITIES.forEach(f => {
+  const st = FAC_STYLE[f.tipo];
+  const icon = L.divIcon({ className:'', html:`<div style="font-size:20px;filter:drop-shadow(0 1px 2px #000)">${st.emoji}</div>`, iconSize:[20,20], iconAnchor:[10,10] });
+  L.marker([f.lat, f.lon], { icon })
+   .bindPopup(`<b>${f.nombre}</b><br>${st.label}<br>${f.dir}`)
+   .addTo(facLayer);
+});
+
 /* ============================================================
    MODELO DE PUNTUACIÓN
    ============================================================ */
@@ -176,7 +212,19 @@ function pesos(){
   const wNse=+document.getElementById('wNse').value;
   const wAm =+document.getElementById('wAm').value;
   const sum = (wPop+wNse+wAm) || 1;
-  return { pop:wPop/sum, nse:wNse/sum, am:wAm/sum, prox:(+document.getElementById('wProx').value)/100 };
+  return { pop:wPop/sum, nse:wNse/sum, am:wAm/sum,
+           prox:(+document.getElementById('wProx').value)/100,
+           comp:(+document.getElementById('wComp').value)/100 };
+}
+
+// Penalización por saturación: cercanía al centro privado competidor más próximo
+function competencia(lat, lon){
+  let best = 0;
+  PRIVADOS.forEach(p => {
+    const d = map.distance(L.latLng(lat,lon), L.latLng(p.lat,p.lon));
+    best = Math.max(best, Math.exp(-Math.pow(d/COMP_SCALE, 2)));
+  });
+  return best; // 1 = pegado a un competidor, 0 = sin competencia cerca
 }
 
 function recompute(){
@@ -190,7 +238,8 @@ function recompute(){
     const base = w.pop*(s.pop/MAX_POP) + w.nse*(s.nse/5) + w.am*(s.am/5);
     // la cercanía atenúa, pero deja un piso para no anular sectores lejanos
     const proxFactor = (1 - w.prox) + w.prox*prox;
-    const score = Math.max(0, Math.min(1, base*proxFactor));
+    const compFactor = 1 - w.comp*competencia(s.lat, s.lon); // descuenta saturación privada
+    const score = Math.max(0, Math.min(1, base*proxFactor*compFactor));
     s._dist = dist; s._score = score;
 
     // esparcir puntos proporcional a la población para una mancha realista
@@ -221,15 +270,18 @@ function renderRank(){
 /* ============================================================
    UI / EVENTOS
    ============================================================ */
-['wPop','wNse','wAm','wProx'].forEach(id=>{
+['wPop','wNse','wAm','wProx','wComp'].forEach(id=>{
   const el=document.getElementById(id);
   el.addEventListener('input',()=>{
     document.getElementById(id+'V').textContent = el.value + '%';
     recompute();
   });
 });
+document.getElementById('showFac').addEventListener('change', e=>{
+  if(e.target.checked) facLayer.addTo(map); else map.removeLayer(facLayer);
+});
 document.getElementById('reset').addEventListener('click',()=>{
-  const d={wPop:45,wNse:30,wAm:25,wProx:60};
+  const d={wPop:45,wNse:30,wAm:25,wProx:60,wComp:35};
   for(const k in d){ document.getElementById(k).value=d[k]; document.getElementById(k+'V').textContent=d[k]+'%'; }
   clinic.setLatLng(center); map.setView(center,13); recompute();
 });

@@ -45,5 +45,17 @@
     { "nombre": "Condominios Antuco / Montreal",       "lat": -37.4950, "lon": -72.3500, "poblacion_est": 6000,  "nse": 4.0, "adulto_mayor": 2.0 },
     { "nombre": "Patria Vieja / Siglo XXI",            "lat": -37.4830, "lon": -72.3350, "poblacion_est": 10000, "nse": 2.5, "adulto_mayor": 2.5 },
     { "nombre": "Santa Fe (localidad NO)",             "lat": -37.4250, "lon": -72.4150, "poblacion_est": 4000,  "nse": 2.0, "adulto_mayor": 3.0 }
-  ]
+  ],
+  "salud_existente": {
+    "nota": "Direcciones reales (prensa/registros públicos); coordenadas APROXIMADAS. tipo: hospital=alta complejidad público, cesfam=APS pública (FONASA, complementaria), privado=competencia directa.",
+    "establecimientos": [
+      { "nombre": "Hospital Base Dr. Víctor Ríos Ruiz", "tipo": "hospital", "direccion": "Av. Ricardo Vicuña 147", "lat": -37.4628, "lon": -72.3468 },
+      { "nombre": "Centro Médico Andes Salud",          "tipo": "privado",  "direccion": "Av. Alemania 1129",       "lat": -37.4576, "lon": -72.3556 },
+      { "nombre": "Centro Médico y Dental RedSalud",    "tipo": "privado",  "direccion": "Centro de Los Ángeles",   "lat": -37.4688, "lon": -72.3518 },
+      { "nombre": "CESFAM Norte",                       "tipo": "cesfam",   "direccion": "Av. Los Ángeles 810, Orompello", "lat": -37.4572, "lon": -72.3502 },
+      { "nombre": "CESFAM Sur Paillihue",               "tipo": "cesfam",   "direccion": "Juan Guzmán 437, Escritores de Chile", "lat": -37.4762, "lon": -72.3332 },
+      { "nombre": "CESFAM Dr. Segismundo Iturra Taito", "tipo": "cesfam",   "direccion": "Sector poniente",         "lat": -37.4694, "lon": -72.3604 },
+      { "nombre": "CESFAM Rural Santa Fe",              "tipo": "cesfam",   "direccion": "Noemí Escobar López s/n, Santa Fe", "lat": -37.4252, "lon": -72.4148 }
+    ]
+  }
 }

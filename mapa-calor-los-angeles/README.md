@@ -17,10 +17,27 @@ base (OpenStreetMap) y las librerías Leaflet desde CDN.
 
 ## Qué puedes hacer
 
-- 🏥 **Arrastrar el marcador de la clínica** para ver cómo cambia la captación según su ubicación.
+- ⭐ **Arrastrar el marcador de tu clínica** para ver cómo cambia la captación según su ubicación.
 - 🎚️ **Ajustar los pesos** del modelo: densidad poblacional, nivel socioeconómico,
-  adulto mayor (demanda crónica) y la importancia de la cercanía.
+  adulto mayor (demanda crónica), cercanía y **saturación por competencia privada**.
+- 🏥 **Ver la red de salud existente** (hospital, CESFAM y centros privados) para detectar
+  vacíos de cobertura y zonas saturadas.
 - 📊 Leer el **ranking de sectores** y los popups con la demografía de cada zona.
+
+### Red de salud existente incluida
+
+| Establecimiento | Tipo | Dirección |
+|---|---|---|
+| Hospital Base Dr. Víctor Ríos Ruiz | Público alta complejidad | Av. Ricardo Vicuña 147 |
+| Centro Médico Andes Salud | Privado (competencia) | Av. Alemania 1129 |
+| Centro Médico y Dental RedSalud | Privado (competencia) | Centro |
+| CESFAM Norte | APS pública | Av. Los Ángeles 810, Orompello |
+| CESFAM Sur Paillihue | APS pública | Juan Guzmán 437 |
+| CESFAM Dr. Segismundo Iturra Taito | APS pública | Sector poniente |
+| CESFAM Rural Santa Fe | APS pública | Santa Fe |
+
+Solo los **centros privados** descuentan puntaje por saturación (compiten por el mismo
+paciente Isapre / Fonasa libre elección); hospital y CESFAM se consideran complementarios.
 
 ## Datos (Censo 2024 — INE Chile)
 
