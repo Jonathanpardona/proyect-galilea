@@ -5,6 +5,7 @@ on:
     branches:
       - claude/review-sampling-project-ECMRt
       - claude/zealous-hamilton-vJSDJ
+      - claude/brave-goodall-fvbtby
 
 permissions:
   contents: read

@@ -12,6 +12,10 @@ import ControlStock from './components/ControlStock'
 import TrackerREAS from './components/TrackerREAS'
 import PipelineB2B from './components/PipelineB2B'
 import RoadmapFase2 from './components/RoadmapFase2'
+import AnalizadorRentabilidad from './components/AnalizadorRentabilidad'
+import EstudioDemanda from './components/EstudioDemanda'
+import FlujoCaja from './components/FlujoCaja'
+import MatrizRiesgos from './components/MatrizRiesgos'
 import './App.css'
 
 const MODULOS = [
@@ -41,12 +45,36 @@ const MODULOS = [
     componente: PlanificadorCapex,
   },
   {
+    id: 'demanda',
+    label: 'Estudio de Demanda',
+    descripcion: 'Mercado, competencia y TAM·SAM·SOM',
+    icono: '🎯',
+    grupo: 'Pre-Apertura',
+    componente: EstudioDemanda,
+  },
+  {
     id: 'simulador',
     label: 'Simulador de Ingresos',
     descripcion: 'Proyección por exámenes',
     icono: '📊',
     grupo: 'Pre-Apertura',
     componente: SimuladorIngresos,
+  },
+  {
+    id: 'rentabilidad',
+    label: 'Analizador Rentabilidad',
+    descripcion: 'Costos, equilibrio y utilidad',
+    icono: '📐',
+    grupo: 'Pre-Apertura',
+    componente: AnalizadorRentabilidad,
+  },
+  {
+    id: 'flujocaja',
+    label: 'Flujo de Caja',
+    descripcion: 'Proyección mensual y capital de trabajo',
+    icono: '💸',
+    grupo: 'Pre-Apertura',
+    componente: FlujoCaja,
   },
   {
     id: 'fonasa',
@@ -71,6 +99,14 @@ const MODULOS = [
     icono: '📄',
     grupo: 'Pre-Apertura',
     componente: GeneradorDocumentos,
+  },
+  {
+    id: 'riesgos',
+    label: 'Matriz de Riesgos',
+    descripcion: 'Probabilidad × impacto y mitigación',
+    icono: '⚠️',
+    grupo: 'Pre-Apertura',
+    componente: MatrizRiesgos,
   },
   // ── Post-Apertura ─────────────────────────────────────
   {
