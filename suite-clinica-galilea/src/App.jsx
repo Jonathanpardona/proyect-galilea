@@ -15,6 +15,7 @@ import RoadmapFase2 from './components/RoadmapFase2'
 import AnalizadorRentabilidad from './components/AnalizadorRentabilidad'
 import EstudioDemanda from './components/EstudioDemanda'
 import FlujoCaja from './components/FlujoCaja'
+import MatrizRiesgos from './components/MatrizRiesgos'
 import './App.css'
 
 const MODULOS = [
@@ -98,6 +99,14 @@ const MODULOS = [
     icono: '📄',
     grupo: 'Pre-Apertura',
     componente: GeneradorDocumentos,
+  },
+  {
+    id: 'riesgos',
+    label: 'Matriz de Riesgos',
+    descripcion: 'Probabilidad × impacto y mitigación',
+    icono: '⚠️',
+    grupo: 'Pre-Apertura',
+    componente: MatrizRiesgos,
   },
   // ── Post-Apertura ─────────────────────────────────────
   {
