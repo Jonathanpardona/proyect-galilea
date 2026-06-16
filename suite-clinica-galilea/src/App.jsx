@@ -14,6 +14,7 @@ import PipelineB2B from './components/PipelineB2B'
 import RoadmapFase2 from './components/RoadmapFase2'
 import AnalizadorRentabilidad from './components/AnalizadorRentabilidad'
 import EstudioDemanda from './components/EstudioDemanda'
+import FlujoCaja from './components/FlujoCaja'
 import './App.css'
 
 const MODULOS = [
@@ -65,6 +66,14 @@ const MODULOS = [
     icono: '📐',
     grupo: 'Pre-Apertura',
     componente: AnalizadorRentabilidad,
+  },
+  {
+    id: 'flujocaja',
+    label: 'Flujo de Caja',
+    descripcion: 'Proyección mensual y capital de trabajo',
+    icono: '💸',
+    grupo: 'Pre-Apertura',
+    componente: FlujoCaja,
   },
   {
     id: 'fonasa',
