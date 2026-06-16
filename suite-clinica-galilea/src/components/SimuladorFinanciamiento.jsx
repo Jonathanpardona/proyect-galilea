@@ -2,6 +2,10 @@ import { useState, useMemo, useEffect } from "react";
 
 const STORAGE_KEY = "simulador_financiamiento_v1";
 
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
+
 const INSTRUMENTS = {
   sercotec: {
     id: "sercotec",
@@ -72,37 +76,20 @@ const fmtCLP = (n) => {
 const fmtFull = (n) => `$${Math.round(n).toLocaleString("es-CL")}`;
 
 export default function SimuladorFinanciamiento() {
-  const [inversionTotal, setInversionTotal] = useState(14000000);
-  const [capitalPropio, setCapitalPropio] = useState(2000000);
-  const [montos, setMontos] = useState({ sercotec: 5000000, corfo: 0, bancoestado: 7000000 });
-  const [tasaCredito, setTasaCredito] = useState(11);
-  const [plazoMeses, setPlazoMeses] = useState(48);
+  const [inversionTotal, setInversionTotal] = useState(() => typeof loadSaved().inversionTotal === "number" ? loadSaved().inversionTotal : 14000000);
+  const [capitalPropio, setCapitalPropio] = useState(() => typeof loadSaved().capitalPropio === "number" ? loadSaved().capitalPropio : 2000000);
+  const [montos, setMontos] = useState(() => loadSaved().montos ?? { sercotec: 5000000, corfo: 0, bancoestado: 7000000 });
+  const [tasaCredito, setTasaCredito] = useState(() => typeof loadSaved().tasaCredito === "number" ? loadSaved().tasaCredito : 11);
+  const [plazoMeses, setPlazoMeses] = useState(() => typeof loadSaved().plazoMeses === "number" ? loadSaved().plazoMeses : 48);
   const [view, setView] = useState("mix");
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const p = JSON.parse(saved);
-        if (typeof p.inversionTotal === "number") setInversionTotal(p.inversionTotal);
-        if (typeof p.capitalPropio === "number") setCapitalPropio(p.capitalPropio);
-        if (p.montos) setMontos(p.montos);
-        if (typeof p.tasaCredito === "number") setTasaCredito(p.tasaCredito);
-        if (typeof p.plazoMeses === "number") setPlazoMeses(p.plazoMeses);
-      }
-    } catch {}
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!loaded) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         inversionTotal, capitalPropio, montos, tasaCredito, plazoMeses,
       }));
-    } catch {}
-  }, [inversionTotal, capitalPropio, montos, tasaCredito, plazoMeses, loaded]);
+    } catch { /* noop */ }
+  }, [inversionTotal, capitalPropio, montos, tasaCredito, plazoMeses]);
 
   const updateMonto = (key, val) => {
     setMontos((prev) => ({ ...prev, [key]: Number(val) || 0 }));

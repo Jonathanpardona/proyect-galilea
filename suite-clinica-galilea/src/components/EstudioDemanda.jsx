@@ -27,50 +27,37 @@ const fmt = (n) =>
 const fmtN = (n) => Math.round(Number.isFinite(n) ? n : 0).toLocaleString('es-CL')
 const fmt1 = (n) => (Number.isFinite(n) ? n : 0).toLocaleString('es-CL', { maximumFractionDigits: 1 })
 
-let nextCompId = COMPETIDORES_INICIALES.length + 1
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
+const numOr = (v, def) => typeof v === 'number' ? v : def
+
+const SAVED = loadSaved()
+let nextCompId = (Array.isArray(SAVED.competidores) && SAVED.competidores.length)
+  ? Math.max(...SAVED.competidores.map(c => c.id)) + 1
+  : COMPETIDORES_INICIALES.length + 1
 
 export default function EstudioDemanda() {
-  const [poblacion, setPoblacion] = useState(45000)
-  const [pctUsaLab, setPctUsaLab] = useState(35)
-  const [visitasAnio, setVisitasAnio] = useState(1.8)
-  const [examenesVisita, setExamenesVisita] = useState(2.2)
-  const [pctAlcanzable, setPctAlcanzable] = useState(60)
-  const [marketShare, setMarketShare] = useState(12)
-  const [ticket, setTicket] = useState(6500)
-  const [diasMes, setDiasMes] = useState(22)
-  const [capacidadDia, setCapacidadDia] = useState(60)
-  const [segmentos, setSegmentos] = useState(SEGMENTOS_INICIALES)
-  const [competidores, setCompetidores] = useState(COMPETIDORES_INICIALES)
-  const [loaded, setLoaded] = useState(false)
+  const [poblacion, setPoblacion] = useState(() => numOr(loadSaved().poblacion, 45000))
+  const [pctUsaLab, setPctUsaLab] = useState(() => numOr(loadSaved().pctUsaLab, 35))
+  const [visitasAnio, setVisitasAnio] = useState(() => numOr(loadSaved().visitasAnio, 1.8))
+  const [examenesVisita, setExamenesVisita] = useState(() => numOr(loadSaved().examenesVisita, 2.2))
+  const [pctAlcanzable, setPctAlcanzable] = useState(() => numOr(loadSaved().pctAlcanzable, 60))
+  const [marketShare, setMarketShare] = useState(() => numOr(loadSaved().marketShare, 12))
+  const [ticket, setTicket] = useState(() => numOr(loadSaved().ticket, 6500))
+  const [diasMes, setDiasMes] = useState(() => numOr(loadSaved().diasMes, 22))
+  const [capacidadDia, setCapacidadDia] = useState(() => numOr(loadSaved().capacidadDia, 60))
+  const [segmentos, setSegmentos] = useState(() => {
+    const s = loadSaved().segmentos
+    return (s && typeof s === 'object') ? s : SEGMENTOS_INICIALES
+  })
+  const [competidores, setCompetidores] = useState(() => {
+    const c = loadSaved().competidores
+    return (Array.isArray(c) && c.length) ? c : COMPETIDORES_INICIALES
+  })
 
   // ── Persistencia ──────────────────────────────────────
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) {
-        const p = JSON.parse(saved)
-        const setIfNum = (v, fn) => { if (typeof v === 'number') fn(v) }
-        setIfNum(p.poblacion, setPoblacion)
-        setIfNum(p.pctUsaLab, setPctUsaLab)
-        setIfNum(p.visitasAnio, setVisitasAnio)
-        setIfNum(p.examenesVisita, setExamenesVisita)
-        setIfNum(p.pctAlcanzable, setPctAlcanzable)
-        setIfNum(p.marketShare, setMarketShare)
-        setIfNum(p.ticket, setTicket)
-        setIfNum(p.diasMes, setDiasMes)
-        setIfNum(p.capacidadDia, setCapacidadDia)
-        if (p.segmentos && typeof p.segmentos === 'object') setSegmentos(p.segmentos)
-        if (Array.isArray(p.competidores) && p.competidores.length) {
-          setCompetidores(p.competidores)
-          nextCompId = Math.max(...p.competidores.map(c => c.id)) + 1
-        }
-      }
-    } catch { /* noop */ }
-    setLoaded(true)
-  }, [])
-
-  useEffect(() => {
-    if (!loaded) return
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         poblacion, pctUsaLab, visitasAnio, examenesVisita, pctAlcanzable,
@@ -78,7 +65,7 @@ export default function EstudioDemanda() {
       }))
     } catch { /* noop */ }
   }, [poblacion, pctUsaLab, visitasAnio, examenesVisita, pctAlcanzable,
-      marketShare, ticket, diasMes, capacidadDia, segmentos, competidores, loaded])
+      marketShare, ticket, diasMes, capacidadDia, segmentos, competidores])
 
   // ── Cálculos ──────────────────────────────────────────
   const calc = useMemo(() => {

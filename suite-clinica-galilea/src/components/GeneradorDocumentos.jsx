@@ -2,6 +2,10 @@ import { useState, useMemo, useEffect } from "react";
 
 const STORAGE_KEY = "documentos_seremi_v1";
 
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
+
 const DEFAULTS = {
   razonSocial: "[Razón Social] SpA",
   rut: "[RUT empresa]",
@@ -574,23 +578,13 @@ Registro SS N° ${d.registroDT}`,
 ];
 
 export default function GeneradorDocumentos() {
-  const [data, setData] = useState(DEFAULTS);
+  const [data, setData] = useState(() => ({ ...DEFAULTS, ...loadSaved() }));
   const [selected, setSelected] = useState("memoria");
   const [viewMode, setViewMode] = useState("editar");
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setData({ ...DEFAULTS, ...JSON.parse(saved) });
-    } catch {}
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!loaded) return;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
-  }, [data, loaded]);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch { /* noop */ }
+  }, [data]);
 
   const update = (key, val) => setData((p) => ({ ...p, [key]: val }));
 

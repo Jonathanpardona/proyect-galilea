@@ -2,6 +2,10 @@ import { useState, useMemo, useEffect } from "react";
 
 const STORAGE_KEY = "roadmap_fase2_v1";
 
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
+
 // Triggers that signal readiness to evolve
 const TRIGGERS = [
   {
@@ -175,27 +179,13 @@ const fmtCLP = (n) => {
 };
 
 export default function RoadmapFase2() {
-  const [completados, setCompletados] = useState({});
-  const [selectedModules, setSelectedModules] = useState({});
+  const [completados, setCompletados] = useState(() => loadSaved().completados ?? {});
+  const [selectedModules, setSelectedModules] = useState(() => loadSaved().selectedModules ?? {});
   const [view, setView] = useState("triggers");
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const p = JSON.parse(saved);
-        if (p.completados) setCompletados(p.completados);
-        if (p.selectedModules) setSelectedModules(p.selectedModules);
-      }
-    } catch {}
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!loaded) return;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ completados, selectedModules })); } catch {}
-  }, [completados, selectedModules, loaded]);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ completados, selectedModules })); } catch { /* noop */ }
+  }, [completados, selectedModules]);
 
   const toggleTrigger = (id) => setCompletados((p) => ({ ...p, [id]: !p[id] }));
   const toggleModule = (id) => setSelectedModules((p) => ({ ...p, [id]: !p[id] }));

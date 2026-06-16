@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ChecklistHabilitacion from './components/ChecklistHabilitacion'
 import CronogramaHabilitacion from './components/CronogramaHabilitacion'
 import PlanificadorCapex from './components/PlanificadorCapex'
@@ -159,12 +159,22 @@ const MODULOS = [
   },
 ]
 
+function temaInicial() {
+  try { return localStorage.getItem('suite_tema') || 'light' } catch { return 'light' }
+}
+
 export default function App() {
   const [activo, setActivo] = useState('checklist')
   const [sidebarAbierto, setSidebarAbierto] = useState(false)
+  const [tema, setTema] = useState(temaInicial)
 
   const moduloActivo = MODULOS.find(m => m.id === activo)
   const Componente = moduloActivo?.componente
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', tema)
+    try { localStorage.setItem('suite_tema', tema) } catch { /* noop */ }
+  }, [tema])
 
   const navegar = (id) => {
     setActivo(id)
@@ -228,6 +238,14 @@ export default function App() {
             <span>{moduloActivo?.icono}</span>
             <span>{moduloActivo?.label}</span>
           </div>
+          <button
+            className="btn-tema"
+            onClick={() => setTema(t => (t === 'dark' ? 'light' : 'dark'))}
+            aria-label={tema === 'dark' ? 'Cambiar a modo día' : 'Cambiar a modo noche'}
+            title={tema === 'dark' ? 'Modo día' : 'Modo noche'}
+          >
+            {tema === 'dark' ? '☀️' : '🌙'}
+          </button>
         </header>
 
         <main className="contenido">

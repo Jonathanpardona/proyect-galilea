@@ -32,29 +32,20 @@ const fmtCLP = (n) => {
 };
 const fmtFull = (n) => `$${Math.round(n).toLocaleString("es-CL")}`;
 
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
+
 export default function PipelineB2B() {
-  const [prospects, setProspects] = useState(SAMPLE_PROSPECTS);
+  const [prospects, setProspects] = useState(() => loadSaved().prospects ?? SAMPLE_PROSPECTS);
   const [editingId, setEditingId] = useState(null);
   const [showNew, setShowNew] = useState(false);
   const [filter, setFilter] = useState("activos");
   const [view, setView] = useState("kanban");
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const p = JSON.parse(saved);
-        if (p.prospects) setProspects(p.prospects);
-      }
-    } catch {}
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!loaded) return;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ prospects })); } catch {}
-  }, [prospects, loaded]);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ prospects })); } catch { /* noop */ }
+  }, [prospects]);
 
   const updateProspect = (id, field, val) => {
     setProspects((prev) => prev.map((p) => p.id === id ? { ...p, [field]: val } : p));
@@ -226,7 +217,6 @@ export default function PipelineB2B() {
 }
 
 function ProspectCard({ prospect, onClick, value }) {
-  const pkg = PACKAGES[prospect.package];
   return (
     <button style={styles.card} onClick={onClick}>
       <div style={styles.cardCompany}>{prospect.company}</div>

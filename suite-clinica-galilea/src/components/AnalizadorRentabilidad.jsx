@@ -38,47 +38,36 @@ const fmt = (n) =>
   })
 const fmt1 = (n) => (Number.isFinite(n) ? n : 0).toLocaleString('es-CL', { maximumFractionDigits: 1 })
 
-let nextExamId = EXAMENES_INICIALES.length + 1
-let nextFijoId = COSTOS_FIJOS_INICIALES.length + 1
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
+
+const SAVED = loadSaved()
+const EXAMENES_INICIAL_STATE = (Array.isArray(SAVED.examenes) && SAVED.examenes.length) ? SAVED.examenes : EXAMENES_INICIALES
+const COSTOS_FIJOS_INICIAL_STATE = (Array.isArray(SAVED.costosFijos) && SAVED.costosFijos.length) ? SAVED.costosFijos : COSTOS_FIJOS_INICIALES
+
+let nextExamId = (Array.isArray(SAVED.examenes) && SAVED.examenes.length)
+  ? Math.max(...SAVED.examenes.map(e => e.id)) + 1
+  : EXAMENES_INICIALES.length + 1
+let nextFijoId = (Array.isArray(SAVED.costosFijos) && SAVED.costosFijos.length)
+  ? Math.max(...SAVED.costosFijos.map(c => c.id)) + 1
+  : COSTOS_FIJOS_INICIALES.length + 1
 
 export default function AnalizadorRentabilidad() {
-  const [examenes, setExamenes] = useState(EXAMENES_INICIALES)
-  const [costosFijos, setCostosFijos] = useState(COSTOS_FIJOS_INICIALES)
-  const [diasMes, setDiasMes] = useState(22)
-  const [inversion, setInversion] = useState(8450000) // CAPEX de referencia
-  const [escenario, setEscenario] = useState('realista')
-  const [loaded, setLoaded] = useState(false)
+  const [examenes, setExamenes] = useState(EXAMENES_INICIAL_STATE)
+  const [costosFijos, setCostosFijos] = useState(COSTOS_FIJOS_INICIAL_STATE)
+  const [diasMes, setDiasMes] = useState(() => typeof loadSaved().diasMes === 'number' ? loadSaved().diasMes : 22)
+  const [inversion, setInversion] = useState(() => typeof loadSaved().inversion === 'number' ? loadSaved().inversion : 8450000) // CAPEX de referencia
+  const [escenario, setEscenario] = useState(() => typeof loadSaved().escenario === 'string' ? loadSaved().escenario : 'realista')
 
   // ── Persistencia ──────────────────────────────────────
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) {
-        const p = JSON.parse(saved)
-        if (Array.isArray(p.examenes) && p.examenes.length) {
-          setExamenes(p.examenes)
-          nextExamId = Math.max(...p.examenes.map(e => e.id)) + 1
-        }
-        if (Array.isArray(p.costosFijos) && p.costosFijos.length) {
-          setCostosFijos(p.costosFijos)
-          nextFijoId = Math.max(...p.costosFijos.map(c => c.id)) + 1
-        }
-        if (typeof p.diasMes === 'number') setDiasMes(p.diasMes)
-        if (typeof p.inversion === 'number') setInversion(p.inversion)
-        if (typeof p.escenario === 'string') setEscenario(p.escenario)
-      }
-    } catch { /* noop */ }
-    setLoaded(true)
-  }, [])
-
-  useEffect(() => {
-    if (!loaded) return
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         examenes, costosFijos, diasMes, inversion, escenario,
       }))
     } catch { /* noop */ }
-  }, [examenes, costosFijos, diasMes, inversion, escenario, loaded])
+  }, [examenes, costosFijos, diasMes, inversion, escenario])
 
   const factor = ESCENARIOS.find(e => e.id === escenario)?.factor ?? 1
 

@@ -30,30 +30,25 @@ const nivel = (score) => {
   return { label: 'Bajo', color: '#16a34a', bg: '#dcfce7', border: '#bbf7d0' }
 }
 
-let nextId = RIESGOS_INICIALES.length + 1
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
+
+function loadRiesgos() {
+  const p = loadSaved()
+  if (Array.isArray(p.riesgos) && p.riesgos.length) return p.riesgos
+  return RIESGOS_INICIALES
+}
+
+const RIESGOS_INICIAL_STATE = loadRiesgos()
+let nextId = Math.max(...RIESGOS_INICIAL_STATE.map(r => r.id)) + 1
 
 export default function MatrizRiesgos() {
-  const [riesgos, setRiesgos] = useState(RIESGOS_INICIALES)
-  const [loaded, setLoaded] = useState(false)
+  const [riesgos, setRiesgos] = useState(RIESGOS_INICIAL_STATE)
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) {
-        const p = JSON.parse(saved)
-        if (Array.isArray(p.riesgos) && p.riesgos.length) {
-          setRiesgos(p.riesgos)
-          nextId = Math.max(...p.riesgos.map(r => r.id)) + 1
-        }
-      }
-    } catch { /* noop */ }
-    setLoaded(true)
-  }, [])
-
-  useEffect(() => {
-    if (!loaded) return
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ riesgos })) } catch { /* noop */ }
-  }, [riesgos, loaded])
+  }, [riesgos])
 
   const conScore = useMemo(() =>
     riesgos.map(r => ({ ...r, score: r.prob * r.impacto, nivel: nivel(r.prob * r.impacto) })),

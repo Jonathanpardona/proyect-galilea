@@ -35,7 +35,6 @@ export default function CalculadoraFonasa() {
 
   const resumen = useMemo(() => {
     const totalBase = seleccionadas.reduce((s, p) => s + p.valorBase, 0)
-    const totalFonasa = totalBase
     const copagoPct = tramoActual.copago / 100
     const copagoPaciente = Math.round(totalBase * copagoPct)
     const cubierto = totalBase - copagoPaciente

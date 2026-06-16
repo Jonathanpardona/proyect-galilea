@@ -11,34 +11,22 @@ const TIPOS = [
 const today = () => new Date().toISOString().slice(0, 10);
 const fmtCLP = (n) => `$${Math.round(n).toLocaleString("es-CL")}`;
 
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
+
 export default function TrackerREAS() {
-  const [retiros, setRetiros] = useState([]);
-  const [empresa, setEmpresa] = useState("REAS Manejo Ltda.");
-  const [rutEmpresa, setRutEmpresa] = useState("");
-  const [responsable, setResponsable] = useState("");
+  const [retiros, setRetiros] = useState(() => loadSaved().retiros ?? []);
+  const [empresa, setEmpresa] = useState(() => loadSaved().empresa || "REAS Manejo Ltda.");
+  const [rutEmpresa, setRutEmpresa] = useState(() => loadSaved().rutEmpresa || "");
+  const [responsable, setResponsable] = useState(() => loadSaved().responsable || "");
   const [showNew, setShowNew] = useState(false);
   const [view, setView] = useState("bitacora");
-  const [loaded, setLoaded] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const p = JSON.parse(saved);
-        if (p.retiros) setRetiros(p.retiros);
-        if (p.empresa) setEmpresa(p.empresa);
-        if (p.rutEmpresa) setRutEmpresa(p.rutEmpresa);
-        if (p.responsable) setResponsable(p.responsable);
-      }
-    } catch {}
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!loaded) return;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ retiros, empresa, rutEmpresa, responsable })); } catch {}
-  }, [retiros, empresa, rutEmpresa, responsable, loaded]);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ retiros, empresa, rutEmpresa, responsable })); } catch { /* noop */ }
+  }, [retiros, empresa, rutEmpresa, responsable]);
 
   const addRetiro = (data) => {
     setRetiros((prev) => [...prev, { id: `r${Date.now()}`, ...data }]);
