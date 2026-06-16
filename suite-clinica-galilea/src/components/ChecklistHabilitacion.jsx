@@ -1,4 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+const STORAGE_KEY = 'checklist_habilitacion_v1'
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
 
 const ITEMS = [
   { id: 1, categoria: 'Infraestructura', texto: 'Sala de toma de muestras con lavamanos clínico' },
@@ -21,7 +26,11 @@ const ITEMS = [
 const CATEGORIAS = [...new Set(ITEMS.map(i => i.categoria))]
 
 export default function ChecklistHabilitacion() {
-  const [checked, setChecked] = useState({})
+  const [checked, setChecked] = useState(() => loadSaved().checked ?? {})
+
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ checked })) } catch { /* noop */ }
+  }, [checked])
 
   const toggle = (id) => setChecked(prev => ({ ...prev, [id]: !prev[id] }))
   const total = ITEMS.length

@@ -1,5 +1,11 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+
+const STORAGE_KEY = 'simulador_ingresos_v1'
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
+const numOr = (v, def) => typeof v === 'number' ? v : def
 
 const EXAMENES = [
   { nombre: 'Hemograma', precio: 4500 },
@@ -15,8 +21,16 @@ const EXAMENES = [
 const fmt = (n) => n.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
 
 export default function SimuladorIngresos() {
-  const [cantidades, setCantidades] = useState(() => Object.fromEntries(EXAMENES.map(e => [e.nombre, 0])))
-  const [diasMes, setDiasMes] = useState(22)
+  const [cantidades, setCantidades] = useState(() => {
+    const saved = loadSaved().cantidades
+    const base = Object.fromEntries(EXAMENES.map(e => [e.nombre, 0]))
+    return saved && typeof saved === 'object' ? { ...base, ...saved } : base
+  })
+  const [diasMes, setDiasMes] = useState(() => numOr(loadSaved().diasMes, 22))
+
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ cantidades, diasMes })) } catch { /* noop */ }
+  }, [cantidades, diasMes])
 
   const set = (nombre, val) => setCantidades(prev => ({ ...prev, [nombre]: Math.max(0, Number(val)) }))
 

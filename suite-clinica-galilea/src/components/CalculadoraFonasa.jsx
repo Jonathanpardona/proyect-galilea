@@ -1,4 +1,9 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+
+const STORAGE_KEY = 'calculadora_fonasa_v1'
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
 
 const TRAMOS = [
   { tramo: 'A', descripcion: 'Indigente / sin ingresos', copago: 0 },
@@ -23,8 +28,12 @@ const PRESTACIONES = [
 const fmt = (n) => n.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
 
 export default function CalculadoraFonasa() {
-  const [tramo, setTramo] = useState('B')
-  const [seleccion, setSeleccion] = useState({})
+  const [tramo, setTramo] = useState(() => loadSaved().tramo ?? 'B')
+  const [seleccion, setSeleccion] = useState(() => loadSaved().seleccion ?? {})
+
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ tramo, seleccion })) } catch { /* noop */ }
+  }, [tramo, seleccion])
 
   const tramoActual = TRAMOS.find(t => t.tramo === tramo)
 

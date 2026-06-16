@@ -1,8 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer, ReferenceLine
 } from 'recharts'
+
+const STORAGE_KEY = 'monitor_crecimiento_v1'
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
+const numOr = (v, def) => typeof v === 'number' ? v : def
 
 const MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
 
@@ -16,9 +22,13 @@ const generarDatos = (base, crecimiento) =>
 const fmt = (n) => n?.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }) ?? '—'
 
 export default function MonitorCrecimiento() {
-  const [baseIngreso, setBaseIngreso] = useState(2500000)
-  const [tasaCrecimiento, setTasaCrecimiento] = useState(8)
-  const [metaMensual, setMetaMensual] = useState(4000000)
+  const [baseIngreso, setBaseIngreso] = useState(() => numOr(loadSaved().baseIngreso, 2500000))
+  const [tasaCrecimiento, setTasaCrecimiento] = useState(() => numOr(loadSaved().tasaCrecimiento, 8))
+  const [metaMensual, setMetaMensual] = useState(() => numOr(loadSaved().metaMensual, 4000000))
+
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ baseIngreso, tasaCrecimiento, metaMensual })) } catch { /* noop */ }
+  }, [baseIngreso, tasaCrecimiento, metaMensual])
 
   const datos = generarDatos(baseIngreso, tasaCrecimiento)
   const ultimoReal = datos.filter(d => d.real !== null).at(-1)
