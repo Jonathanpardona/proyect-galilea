@@ -1,4 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
+const STORAGE_KEY = 'cronograma_habilitacion_v1'
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
 
 const TAREAS_INICIALES = [
   { id: 1, nombre: 'Solicitud de habilitación SEREMI', responsable: 'Director', inicio: 1, duracion: 2, estado: 'completado' },
@@ -23,7 +28,14 @@ const ESTADO_COLOR = {
 const ESTADOS = ['pendiente', 'en-curso', 'completado']
 
 export default function CronogramaHabilitacion() {
-  const [tareas, setTareas] = useState(TAREAS_INICIALES)
+  const [tareas, setTareas] = useState(() => {
+    const t = loadSaved().tareas
+    return Array.isArray(t) && t.length ? t : TAREAS_INICIALES
+  })
+
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ tareas })) } catch { /* noop */ }
+  }, [tareas])
 
   const setEstado = (id, estado) =>
     setTareas(prev => prev.map(t => t.id === id ? { ...t, estado } : t))

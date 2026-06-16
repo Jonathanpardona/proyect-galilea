@@ -1,5 +1,10 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+
+const STORAGE_KEY = 'planificador_capex_v1'
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
 
 const CATEGORIAS_COLOR = {
   Equipamiento: '#3b82f6',
@@ -20,11 +25,19 @@ const ITEMS_INICIALES = [
 
 const fmt = (n) => n.toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
 
-let nextId = ITEMS_INICIALES.length + 1
+const ITEMS_INICIAL_STATE = (() => {
+  const it = loadSaved().items
+  return Array.isArray(it) && it.length ? it : ITEMS_INICIALES
+})()
+let nextId = Math.max(0, ...ITEMS_INICIAL_STATE.map(i => Number(i.id) || 0)) + 1
 
 export default function PlanificadorCapex() {
-  const [items, setItems] = useState(ITEMS_INICIALES)
+  const [items, setItems] = useState(ITEMS_INICIAL_STATE)
   const [nuevo, setNuevo] = useState({ nombre: '', categoria: 'Equipamiento', costo: '', mes: 1 })
+
+  useEffect(() => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ items })) } catch { /* noop */ }
+  }, [items])
 
   const agregar = () => {
     if (!nuevo.nombre || !nuevo.costo) return
