@@ -12,6 +12,7 @@ import ControlStock from './components/ControlStock'
 import TrackerREAS from './components/TrackerREAS'
 import PipelineB2B from './components/PipelineB2B'
 import RoadmapFase2 from './components/RoadmapFase2'
+import AnalizadorRentabilidad from './components/AnalizadorRentabilidad'
 import './App.css'
 
 const MODULOS = [
@@ -47,6 +48,14 @@ const MODULOS = [
     icono: '📊',
     grupo: 'Pre-Apertura',
     componente: SimuladorIngresos,
+  },
+  {
+    id: 'rentabilidad',
+    label: 'Analizador Rentabilidad',
+    descripcion: 'Costos, equilibrio y utilidad',
+    icono: '📐',
+    grupo: 'Pre-Apertura',
+    componente: AnalizadorRentabilidad,
   },
   {
     id: 'fonasa',

@@ -269,3 +269,22 @@ input:focus, select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59
 .resumen-fila.naranja { background: #fff7ed; color: #c2410c; }
 
 .vacio { color: #94a3b8; font-size: 13px; padding: 20px 0; text-align: center; }
+
+/* Analizador de Rentabilidad */
+.rent-escenarios { display: flex; gap: 6px; }
+.rent-esc-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px;
+  padding: 7px 8px; border: 2px solid #e2e8f0; border-radius: 8px;
+  background: white; cursor: pointer; font-size: 12px; font-weight: 600; color: #64748b;
+}
+.rent-esc-btn small { font-size: 10px; font-weight: 500; color: #94a3b8; }
+.rent-esc-btn.activo small { color: inherit; opacity: .8; }
+.rent-estado {
+  margin-top: 16px; padding: 12px 14px; border: 1px solid; border-radius: 10px;
+  font-size: 13px; line-height: 1.5;
+}
+.rent-tabla-wrap { overflow-x: auto; }
+.rent-input-txt {
+  width: 100%; min-width: 130px; padding: 4px 8px;
+  border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;
+}
