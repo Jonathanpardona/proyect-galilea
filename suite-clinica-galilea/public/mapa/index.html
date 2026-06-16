@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa de Calor · Factibilidad de Clientes · Clínica Galilea · Los Ángeles, Chile</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.css" />
+  <style>
+    :root{
+      --bg:#0f172a; --panel:#1e293b; --panel2:#273449; --txt:#e2e8f0;
+      --muted:#94a3b8; --accent:#38bdf8; --accent2:#22c55e; --warn:#f59e0b;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt)}
+    #app{display:flex;height:100%;width:100%}
+    #map{flex:1;height:100%}
+    #side{width:360px;min-width:360px;height:100%;overflow-y:auto;background:var(--panel);border-left:1px solid #334155;padding:16px}
+    h1{font-size:16px;margin:0 0 2px}
+    h2{font-size:13px;margin:18px 0 8px;color:var(--accent);text-transform:uppercase;letter-spacing:.5px}
+    .sub{font-size:12px;color:var(--muted);margin:0 0 12px}
+    .kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .kpi{background:var(--panel2);border-radius:8px;padding:10px}
+    .kpi .v{font-size:18px;font-weight:700;color:#fff}
+    .kpi .l{font-size:11px;color:var(--muted);margin-top:2px}
+    .ctrl{background:var(--panel2);border-radius:8px;padding:12px;margin-bottom:10px}
+    .ctrl label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;color:var(--muted)}
+    .ctrl input[type=range]{width:100%}
+    .rank{font-size:12px}
+    .rank .row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;margin-bottom:4px;background:var(--panel2)}
+    .rank .bar{height:8px;border-radius:4px;background:linear-gradient(90deg,#3b82f6,#22c55e,#eab308,#ef4444);flex:0 0 auto}
+    .rank .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .rank .sc{font-variant-numeric:tabular-nums;color:#fff;font-weight:600;width:34px;text-align:right}
+    .pill{display:inline-block;background:#0b4f6c;color:#bae6fd;border-radius:99px;padding:2px 8px;font-size:11px;margin:2px 2px 0 0}
+    .legend{position:absolute;bottom:16px;left:16px;z-index:1000;background:rgba(15,23,42,.9);padding:10px 12px;border-radius:8px;font-size:12px;line-height:1.5}
+    .legend .grad{height:10px;width:160px;border-radius:5px;background:linear-gradient(90deg,#2563eb,#22c55e,#eab308,#f97316,#ef4444);margin:4px 0}
+    .note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:8px}
+    a{color:var(--accent)}
+    .tag{font-size:10px;color:#fbbf24;border:1px solid #fbbf24;border-radius:4px;padding:1px 5px;margin-left:6px}
+    button{background:var(--accent);color:#04293c;border:0;border-radius:6px;padding:8px 10px;font-weight:600;cursor:pointer;width:100%}
+    button.sec{background:var(--panel2);color:var(--txt);border:1px solid #475569;margin-top:6px}
+    .leaflet-popup-content{font-size:12px;line-height:1.5}
+  </style>
+</head>
+<body>
+<div id="app">
+  <div id="map">
+    <div class="legend">
+      <b>Potencial de captación de pacientes</b>
+      <div class="grad"></div>
+      <div style="display:flex;justify-content:space-between"><span>Bajo</span><span>Alto</span></div>
+      <div style="margin-top:6px">⭐ Tu clínica · 🏥 Hospital · ➕ CESFAM · ⚕️ Privado</div>
+      <div style="margin-top:2px">🔍 Busca la dirección o arrastra ⭐ para recalcular.</div>
+    </div>
+  </div>
+  <div id="side">
+    <h1>Mapa de Calor · Clínica Galilea</h1>
+    <p class="sub">Factibilidad de captación de pacientes — Los Ángeles, Región del Biobío, Chile.</p>
+
+    <h2>Censo 2024 · Comuna</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="v">219.441</div><div class="l">Población comunal</div></div>
+      <div class="kpi"><div class="v">~163.922</div><div class="l">Población urbana (74,7%)</div></div>
+      <div class="kpi"><div class="v">37,6</div><div class="l">Edad promedio (años)</div></div>
+      <div class="kpi"><div class="v">114.005</div><div class="l">Mujeres · 105.436 hombres</div></div>
+    </div>
+    <div style="margin-top:8px">
+      <span class="pill">2ª comuna más poblada del Biobío</span>
+      <span class="pill">19,8% son 60+ (país)</span>
+      <span class="pill">Paillihue ≈ 25% de la ciudad</span>
+    </div>
+
+    <h2>Modelo de factibilidad <span class="tag">ajustable</span></h2>
+    <p class="sub" style="margin:0 0 8px">Ajusta el peso de cada factor; el mapa se recalcula al instante.</p>
+    <div class="ctrl">
+      <label>Densidad poblacional <span id="wPopV">45%</span></label>
+      <input id="wPop" type="range" min="0" max="100" value="45" />
+      <label>Nivel socioeconómico <span id="wNseV">30%</span></label>
+      <input id="wNse" type="range" min="0" max="100" value="30" />
+      <label>Adulto mayor / demanda crónica <span id="wAmV">25%</span></label>
+      <input id="wAm" type="range" min="0" max="100" value="25" />
+      <label>Importancia de la cercanía a la clínica <span id="wProxV">60%</span></label>
+      <input id="wProx" type="range" min="0" max="100" value="60" />
+      <label>Saturación por competencia privada <span id="wCompV">35%</span></label>
+      <input id="wComp" type="range" min="0" max="100" value="35" />
+    </div>
+    <label style="display:flex;gap:8px;align-items:center;font-size:12px;margin-bottom:8px;color:var(--muted)">
+      <input id="showFac" type="checkbox" checked /> Mostrar red de salud existente (hospital · CESFAM · privados)
+    </label>
+    <button id="reset" class="sec">↺ Restablecer valores</button>
+
+    <h2>Alcance de la ubicación <span class="tag">catchment</span></h2>
+    <p class="sub" style="margin:0 0 8px">Población modelada alcanzable por radio (línea recta) desde ⭐, y competidores dentro del radio primario (2 km).</p>
+    <div id="reach"></div>
+    <p class="note" id="clinicPos"></p>
+
+    <h2>Ranking de sectores</h2>
+    <div id="rank" class="rank"></div>
+
+    <h2>Fuentes y método</h2>
+    <p class="note">
+      Totales comunales: <b>Censo de Población y Vivienda 2024, INE Chile</b>
+      (<a href="https://censo2024.ine.gob.cl/resultados/" target="_blank" rel="noopener">censo2024.ine.gob.cl</a>).
+      Sectores y datos de Paillihue: prensa local y reportes comunales BCN.
+      Los <b>índices socioeconómico y de adulto mayor por sector son estimaciones de planificación</b>
+      y las coordenadas son centroides aproximados (no polígonos censales oficiales).
+      Úsalo como herramienta de exploración, no como dato oficial por manzana.
+    </p>
+    <p class="note">Mapa base © OpenStreetMap · Leaflet + Leaflet.heat.</p>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.js"></script>
+<script>
+/* ============================================================
+   DATOS — Censo 2024 (INE) + estimaciones de sector
+   (mismo contenido que datos-censo.json, embebido para abrir
+   el archivo con doble clic sin necesidad de servidor local)
+   ============================================================ */
+const SECTORES = [
+  { nombre:"Centro (Plaza de Armas)",             lat:-37.4697, lon:-72.3536, pop:14000, nse:3.0, am:3.5 },
+  { nombre:"Paillihue",                            lat:-37.4640, lon:-72.3290, pop:50000, nse:2.5, am:2.5 },
+  { nombre:"Sector Sur / 21 de Mayo",              lat:-37.4880, lon:-72.3470, pop:14000, nse:2.0, am:2.5 },
+  { nombre:"Villa Los Ríos",                       lat:-37.4900, lon:-72.3400, pop:8000,  nse:2.0, am:2.0 },
+  { nombre:"Parque Lauquén",                       lat:-37.4920, lon:-72.3560, pop:7000,  nse:3.0, am:2.0 },
+  { nombre:"Jardines de la República (G. Mistral)",lat:-37.4560, lon:-72.3470, pop:12000, nse:3.5, am:3.0 },
+  { nombre:"Villa Cataluña",                       lat:-37.4570, lon:-72.3380, pop:6000,  nse:3.0, am:2.5 },
+  { nombre:"Plaza España / Sector Hospital",       lat:-37.4640, lon:-72.3590, pop:8000,  nse:3.5, am:3.5 },
+  { nombre:"Sector Norte (Av. Alemania)",          lat:-37.4560, lon:-72.3590, pop:9000,  nse:3.5, am:3.0 },
+  { nombre:"Nororiente / El Retiro",               lat:-37.4520, lon:-72.3330, pop:5000,  nse:3.0, am:2.5 },
+  { nombre:"Sector Poniente (Av. Las Industrias)", lat:-37.4700, lon:-72.3680, pop:7000,  nse:2.5, am:2.5 },
+  { nombre:"Sector Oriente (Camino a Antuco)",     lat:-37.4720, lon:-72.3300, pop:5000,  nse:3.0, am:2.5 },
+  { nombre:"Condominios Antuco / Montreal",        lat:-37.4950, lon:-72.3500, pop:6000,  nse:4.0, am:2.0 },
+  { nombre:"Patria Vieja / Siglo XXI",             lat:-37.4830, lon:-72.3350, pop:10000, nse:2.5, am:2.5 },
+  { nombre:"Santa Fe (localidad NO)",              lat:-37.4250, lon:-72.4150, pop:4000,  nse:2.0, am:3.0 }
+];
+
+const MAX_POP = Math.max(...SECTORES.map(s => s.pop));
+const PROX_SCALE = 2600; // metros: escala de decaimiento por distancia
+const COMP_SCALE = 1500; // metros: alcance de saturación por competencia privada
+
+/* Infraestructura de salud existente (direcciones reales; coordenadas aproximadas).
+   tipo: hospital=alta complejidad público · cesfam=APS pública (FONASA, complementaria)
+        privado=competencia directa (Isapre/Fonasa libre elección) */
+const FACILITIES = [
+  { nombre:"Hospital Base Dr. Víctor Ríos Ruiz", tipo:"hospital", dir:"Av. Ricardo Vicuña 147", lat:-37.4628, lon:-72.3468 },
+  { nombre:"Centro Médico Andes Salud",          tipo:"privado",  dir:"Av. Alemania 1129",       lat:-37.4576, lon:-72.3556 },
+  { nombre:"Centro Médico y Dental RedSalud",    tipo:"privado",  dir:"Centro de Los Ángeles",   lat:-37.4688, lon:-72.3518 },
+  { nombre:"CESFAM Norte",                       tipo:"cesfam",   dir:"Av. Los Ángeles 810, Orompello", lat:-37.4572, lon:-72.3502 },
+  { nombre:"CESFAM Sur Paillihue",               tipo:"cesfam",   dir:"Juan Guzmán 437, Escritores de Chile", lat:-37.4762, lon:-72.3332 },
+  { nombre:"CESFAM Dr. Segismundo Iturra Taito", tipo:"cesfam",   dir:"Sector poniente",         lat:-37.4694, lon:-72.3604 },
+  { nombre:"CESFAM Rural Santa Fe",              tipo:"cesfam",   dir:"Noemí Escobar López s/n, Santa Fe", lat:-37.4252, lon:-72.4148 }
+];
+const PRIVADOS = FACILITIES.filter(f => f.tipo === "privado");
+
+/* ============================================================
+   MAPA BASE
+   ============================================================ */
+const center = [-37.4697, -72.3536];                 // centro de la ciudad (vista del mapa)
+const CLINIC0 = [-37.4668, -72.3338];                // estimación inicial: sector Galilea / Av. P. A. Hurtado (AFINAR con el buscador)
+const RINGS = [1000, 2000, 3000];                    // anillos de alcance (metros)
+const PRIMARY_R = 2000;                               // radio primario para contar competidores
+
+const map = L.map('map', { zoomControl:true }).setView(center, 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '© OpenStreetMap'
+}).addTo(map);
+
+/* Buscador de direcciones (geocodificación en el navegador, vía Nominatim/OSM).
+   Escribe "Australian Southern College, Los Ángeles" o la dirección para fijar la clínica. */
+const geocoder = L.Control.geocoder({
+  defaultMarkGeocode: false,
+  placeholder: 'Buscar dirección / lugar…',
+  geocoder: L.Control.Geocoder.nominatim({ geocodingQueryParams: { countrycodes: 'cl', viewbox: '-72.45,-37.40,-72.28,-37.51', bounded: 1 } })
+}).addTo(map);
+geocoder.on('markgeocode', e => {
+  const c = e.geocode.center;
+  clinic.setLatLng(c); map.setView(c, 15); recompute();
+});
+
+/* Marcador arrastrable de la clínica */
+const clinicIcon = L.divIcon({
+  className:'', html:'<div style="font-size:28px;filter:drop-shadow(0 1px 3px #000)">⭐</div>',
+  iconSize:[28,28], iconAnchor:[14,14]
+});
+const clinic = L.marker(CLINIC0, { draggable:true, icon:clinicIcon, title:"Ubicación prevista de la clínica (arrástrame o usa el buscador)" }).addTo(map);
+clinic.bindTooltip("Clínica Galilea (ubicación estimada) — arrástrame o búscala", {direction:'top'});
+
+/* Anillos de alcance alrededor de la clínica */
+const ringsLayer = L.layerGroup().addTo(map);
+
+let heat = L.heatLayer([], { radius:38, blur:28, max:1.0, minOpacity:0.25,
+  gradient:{0.2:'#2563eb',0.4:'#22c55e',0.6:'#eab308',0.8:'#f97316',1.0:'#ef4444'} }).addTo(map);
+
+/* Marcadores de sector con popup informativo */
+const sectorMarkers = SECTORES.map(s => {
+  const m = L.circleMarker([s.lat, s.lon], { radius:5, color:'#0ea5e9', weight:1, fillColor:'#0ea5e9', fillOpacity:.7 }).addTo(map);
+  m.bindPopup(() => {
+    const sc = Math.round(s._score*100);
+    return `<b>${s.nombre}</b><br>
+      Población estimada: <b>${s.pop.toLocaleString('es-CL')}</b><br>
+      Nivel socioeconómico: ${s.nse}/5<br>
+      Índice adulto mayor: ${s.am}/5<br>
+      Distancia a la clínica: <b>${(s._dist/1000).toFixed(2)} km</b><br>
+      <span style="color:#22c55e">Potencial de captación: <b>${sc}/100</b></span>`;
+  });
+  return m;
+});
+
+/* Capa de salud existente */
+const FAC_STYLE = {
+  hospital:{ emoji:'🏥', label:'Hospital (alta complejidad, público)' },
+  cesfam:  { emoji:'➕', label:'CESFAM (APS pública · FONASA)' },
+  privado: { emoji:'⚕️', label:'Centro privado (competencia directa)' }
+};
+const facLayer = L.layerGroup().addTo(map);
+FACILITIES.forEach(f => {
+  const st = FAC_STYLE[f.tipo];
+  const icon = L.divIcon({ className:'', html:`<div style="font-size:20px;filter:drop-shadow(0 1px 2px #000)">${st.emoji}</div>`, iconSize:[20,20], iconAnchor:[10,10] });
+  L.marker([f.lat, f.lon], { icon })
+   .bindPopup(`<b>${f.nombre}</b><br>${st.label}<br>${f.dir}`)
+   .addTo(facLayer);
+});
+
+/* ============================================================
+   MODELO DE PUNTUACIÓN
+   ============================================================ */
+function gauss(sigma){ // jitter pseudo-gaussiano para esparcir puntos
+  let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)*sigma;
+}
+
+function pesos(){
+  const wPop=+document.getElementById('wPop').value;
+  const wNse=+document.getElementById('wNse').value;
+  const wAm =+document.getElementById('wAm').value;
+  const sum = (wPop+wNse+wAm) || 1;
+  return { pop:wPop/sum, nse:wNse/sum, am:wAm/sum,
+           prox:(+document.getElementById('wProx').value)/100,
+           comp:(+document.getElementById('wComp').value)/100 };
+}
+
+// Penalización por saturación: cercanía al centro privado competidor más próximo
+function competencia(lat, lon){
+  let best = 0;
+  PRIVADOS.forEach(p => {
+    const d = map.distance(L.latLng(lat,lon), L.latLng(p.lat,p.lon));
+    best = Math.max(best, Math.exp(-Math.pow(d/COMP_SCALE, 2)));
+  });
+  return best; // 1 = pegado a un competidor, 0 = sin competencia cerca
+}
+
+function recompute(){
+  const w = pesos();
+  const cll = clinic.getLatLng();
+  const pts = [];
+
+  SECTORES.forEach(s => {
+    const dist = map.distance(cll, L.latLng(s.lat, s.lon));
+    const prox = Math.exp(-Math.pow(dist/PROX_SCALE, 2)); // 1 cerca -> 0 lejos
+    const base = w.pop*(s.pop/MAX_POP) + w.nse*(s.nse/5) + w.am*(s.am/5);
+    // la cercanía atenúa, pero deja un piso para no anular sectores lejanos
+    const proxFactor = (1 - w.prox) + w.prox*prox;
+    const compFactor = 1 - w.comp*competencia(s.lat, s.lon); // descuenta saturación privada
+    const score = Math.max(0, Math.min(1, base*proxFactor*compFactor));
+    s._dist = dist; s._score = score;
+
+    // esparcir puntos proporcional a la población para una mancha realista
+    const n = Math.max(6, Math.round(s.pop/800));
+    const sigma = 0.0065; // ~radio del sector en grados
+    for(let i=0;i<n;i++){
+      pts.push([ s.lat + gauss(sigma), s.lon + gauss(sigma), score ]);
+    }
+  });
+
+  heat.setLatLngs(pts);
+  renderRank();
+  renderReach(cll);
+  drawRings(cll);
+}
+
+// Dibuja los anillos de alcance
+function drawRings(cll){
+  ringsLayer.clearLayers();
+  const colors = ['#22c55e','#eab308','#f97316'];
+  RINGS.forEach((r,i)=>{
+    L.circle(cll, { radius:r, color:colors[i], weight:1.5, fill:false, dashArray:'5,6' })
+     .bindTooltip(`${r/1000} km`, {permanent:false}).addTo(ringsLayer);
+  });
+}
+
+// Población modelada alcanzable por radio + competidores en radio primario
+function renderReach(cll){
+  const totalPop = SECTORES.reduce((a,s)=>a+s.pop,0);
+  const rows = RINGS.map(r=>{
+    const pop = SECTORES.reduce((a,s)=>
+      a + (map.distance(cll, L.latLng(s.lat,s.lon)) <= r ? s.pop : 0), 0);
+    const pct = Math.round(100*pop/totalPop);
+    return `<div class="row"><div class="bar" style="width:${Math.max(6,pct)}%"></div>
+      <span class="nm">≤ ${r/1000} km</span>
+      <span class="sc">${pct}%</span></div>
+      <div class="note" style="margin:-2px 0 6px">${pop.toLocaleString('es-CL')} hab. modelados</div>`;
+  }).join('');
+
+  const compe = FACILITIES.filter(f=>f.tipo==='privado' &&
+    map.distance(cll, L.latLng(f.lat,f.lon)) <= PRIMARY_R)
+    .map(f=>`${f.nombre} (${Math.round(map.distance(cll,L.latLng(f.lat,f.lon)))} m)`);
+  const compHtml = compe.length
+    ? `<div class="note" style="color:#fca5a5">⚕️ Competencia privada en ${PRIMARY_R/1000} km: ${compe.join('; ')}</div>`
+    : `<div class="note" style="color:#86efac">✓ Sin competencia privada directa dentro de ${PRIMARY_R/1000} km</div>`;
+
+  document.getElementById('reach').innerHTML = '<div class="rank">'+rows+'</div>'+compHtml;
+  const ll = clinic.getLatLng();
+  document.getElementById('clinicPos').textContent =
+    `Posición ⭐: ${ll.lat.toFixed(5)}, ${ll.lng.toFixed(5)}`;
+}
+
+function renderRank(){
+  const ordered = [...SECTORES].sort((a,b)=>b._score-a._score);
+  const html = ordered.map(s=>{
+    const sc = Math.round(s._score*100);
+    return `<div class="row">
+      <div class="bar" style="width:${Math.max(6,sc)}%"></div>
+      <span class="nm">${s.nombre}</span>
+      <span class="sc">${sc}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('rank').innerHTML = html;
+}
+
+/* ============================================================
+   UI / EVENTOS
+   ============================================================ */
+['wPop','wNse','wAm','wProx','wComp'].forEach(id=>{
+  const el=document.getElementById(id);
+  el.addEventListener('input',()=>{
+    document.getElementById(id+'V').textContent = el.value + '%';
+    recompute();
+  });
+});
+document.getElementById('showFac').addEventListener('change', e=>{
+  if(e.target.checked) facLayer.addTo(map); else map.removeLayer(facLayer);
+});
+document.getElementById('reset').addEventListener('click',()=>{
+  const d={wPop:45,wNse:30,wAm:25,wProx:60,wComp:35};
+  for(const k in d){ document.getElementById(k).value=d[k]; document.getElementById(k+'V').textContent=d[k]+'%'; }
+  clinic.setLatLng(CLINIC0); map.setView(center,13); recompute();
+});
+clinic.on('drag', recompute);
+
+recompute();
+</script>
+</body>
+</html>
