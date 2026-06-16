@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useThemeColors } from "../useThemeColors";
 
 const STORAGE_KEY = "roadmap_fase2_v1";
 
@@ -182,6 +183,7 @@ export default function RoadmapFase2() {
   const [completados, setCompletados] = useState(() => loadSaved().completados ?? {});
   const [selectedModules, setSelectedModules] = useState(() => loadSaved().selectedModules ?? {});
   const [view, setView] = useState("triggers");
+  const c = useThemeColors();
 
   useEffect(() => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ completados, selectedModules })); } catch { /* noop */ }
@@ -228,7 +230,7 @@ export default function RoadmapFase2() {
             </div>
             <div style={styles.scoreRing}>
               <svg width="80" height="80" viewBox="0 0 80 80">
-                <circle cx="40" cy="40" r="34" fill="none" stroke="#1e3a5f" strokeWidth="6" />
+                <circle cx="40" cy="40" r="34" fill="none" stroke={c.border} strokeWidth="6" />
                 <circle cx="40" cy="40" r="34" fill="none"
                   stroke={readinessLevel.color} strokeWidth="6"
                   strokeDasharray={`${2 * Math.PI * 34}`}
@@ -236,7 +238,7 @@ export default function RoadmapFase2() {
                   strokeLinecap="round"
                   transform="rotate(-90 40 40)"
                   style={{ transition: "stroke-dashoffset 0.6s ease" }} />
-                <text x="40" y="46" textAnchor="middle" fill="#e8f4ff" fontSize="18" fontWeight="800">
+                <text x="40" y="46" textAnchor="middle" fill={c.text} fontSize="18" fontWeight="800">
                   {readinessScore}
                 </text>
               </svg>
@@ -271,7 +273,7 @@ export default function RoadmapFase2() {
                   <button onClick={() => toggleTrigger(t.id)} style={{
                     ...styles.triggerCheck,
                     background: checked ? "#34d399" : "transparent",
-                    borderColor: checked ? "#34d399" : "#2a4a6b",
+                    borderColor: checked ? "#34d399" : "var(--g-border)",
                   }}>
                     {checked && "✓"}
                   </button>
@@ -283,8 +285,8 @@ export default function RoadmapFase2() {
                   </div>
                   <div style={{
                     ...styles.weight,
-                    color: checked ? "#34d399" : "#5a8aaa",
-                    borderColor: checked ? "#34d39940" : "#1a3a5c",
+                    color: checked ? "#34d399" : "var(--g-text-muted)",
+                    borderColor: checked ? "#34d39940" : "var(--g-border)",
                   }}>+{t.weight}</div>
                 </div>
               );
@@ -300,11 +302,11 @@ export default function RoadmapFase2() {
             {MODULES.map((m) => {
               const isSelected = selectedModules[m.id];
               return (
-                <div key={m.id} style={{ ...styles.moduleCard, borderColor: isSelected ? m.color : "#0e2a45" }}>
+                <div key={m.id} style={{ ...styles.moduleCard, borderColor: isSelected ? m.color : "var(--g-border)" }}>
                   <button onClick={() => toggleModule(m.id)} style={styles.moduleHeader}>
                     <span style={styles.moduleIcon}>{m.icon}</span>
                     <div style={{ flex: 1, textAlign: "left" }}>
-                      <div style={{ ...styles.moduleTitle, color: isSelected ? m.color : "#cde4f5" }}>
+                      <div style={{ ...styles.moduleTitle, color: isSelected ? m.color : "var(--g-text)" }}>
                         {m.title}
                       </div>
                       <div style={styles.modulePriority}>
@@ -313,7 +315,7 @@ export default function RoadmapFase2() {
                     </div>
                     <div style={{
                       width: 24, height: 24, borderRadius: 6,
-                      border: `2px solid ${isSelected ? m.color : "#2a4a6b"}`,
+                      border: `2px solid ${isSelected ? m.color : "var(--g-border)"}`,
                       background: isSelected ? m.color : "transparent",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       color: "#fff", fontSize: 14, fontWeight: 800,
@@ -412,53 +414,53 @@ function PlanStat({ label, value, color, big }) {
 }
 
 const styles = {
-  root: { minHeight: "100vh", background: "#050f1e", fontFamily: "'DM Sans', sans-serif", color: "#cde4f5", position: "relative" },
-  bg: { position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 50% at 20% 0%, #0a3a2a 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 100%, #1a2f5e 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 },
+  root: { minHeight: "100vh", background: "var(--g-page-bg)", fontFamily: "'DM Sans', sans-serif", color: "var(--g-text)", position: "relative" },
+  bg: { position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 50% at 20% 0%, rgba(52,211,153,0.10) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 100%, rgba(56,189,248,0.10) 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 },
   header: { position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto", padding: "2rem 1rem 1.5rem" },
   badge: { display: "inline-block", fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "#34d399", background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.25)", borderRadius: 4, padding: "2px 8px", marginBottom: 8 },
-  title: { fontSize: "1.9rem", fontWeight: 800, margin: 0, color: "#e8f4ff", letterSpacing: "-0.02em", lineHeight: 1.1 },
-  subtitle: { fontSize: 13, color: "#5a8aaa", margin: "4px 0 1.25rem" },
-  readinessCard: { background: "linear-gradient(135deg, rgba(52,211,153,0.06), rgba(10,25,48,0.7))", border: "1px solid rgba(52,211,153,0.2)", borderRadius: 14, padding: "1rem" },
+  title: { fontSize: "1.9rem", fontWeight: 800, margin: 0, color: "var(--g-text)", letterSpacing: "-0.02em", lineHeight: 1.1 },
+  subtitle: { fontSize: 13, color: "var(--g-text-muted)", margin: "4px 0 1.25rem" },
+  readinessCard: { background: "linear-gradient(135deg, rgba(52,211,153,0.06), var(--g-surface))", border: "1px solid rgba(52,211,153,0.2)", borderRadius: 14, padding: "1rem" },
   readinessHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 },
-  readinessLabel: { fontSize: 10, color: "#5a8aaa", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 },
+  readinessLabel: { fontSize: 10, color: "var(--g-text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 },
   readinessLevel: { fontSize: 22, fontWeight: 900, letterSpacing: "-0.02em" },
   scoreRing: { display: "flex", alignItems: "center" },
-  readinessMsg: { fontSize: 12, color: "#cde4f5", lineHeight: 1.5 },
+  readinessMsg: { fontSize: 12, color: "var(--g-text)", lineHeight: 1.5 },
   main: { position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto", padding: "0 1rem 3rem", display: "flex", flexDirection: "column", gap: "0.75rem" },
-  tabs: { display: "flex", gap: 4, padding: 4, background: "rgba(10,25,48,0.5)", borderRadius: 10, border: "1px solid #0e2a45" },
-  tab: { flex: 1, background: "transparent", border: "none", padding: "8px 12px", fontSize: 12, color: "#5a8aaa", cursor: "pointer", borderRadius: 6, fontWeight: 600, fontFamily: "inherit" },
+  tabs: { display: "flex", gap: 4, padding: 4, background: "var(--g-surface)", borderRadius: 10, border: "1px solid var(--g-border)" },
+  tab: { flex: 1, background: "transparent", border: "none", padding: "8px 12px", fontSize: 12, color: "var(--g-text-muted)", cursor: "pointer", borderRadius: 6, fontWeight: 600, fontFamily: "inherit" },
   tabActive: { background: "rgba(52,211,153,0.15)", color: "#34d399" },
-  intro: { fontSize: 12, color: "#7aaec8", lineHeight: 1.5, padding: "0.5rem 0.25rem" },
-  triggerCard: { display: "flex", alignItems: "flex-start", gap: 12, padding: "0.85rem 1rem", background: "rgba(10,25,48,0.6)", border: "1px solid #0e2a45", borderRadius: 10 },
+  intro: { fontSize: 12, color: "var(--g-text-muted)", lineHeight: 1.5, padding: "0.5rem 0.25rem" },
+  triggerCard: { display: "flex", alignItems: "flex-start", gap: 12, padding: "0.85rem 1rem", background: "var(--g-surface)", border: "1px solid var(--g-border)", borderRadius: 10 },
   triggerCardActive: { background: "rgba(52,211,153,0.05)", borderColor: "rgba(52,211,153,0.3)" },
   triggerCheck: { width: 24, height: 24, borderRadius: 6, border: "2px solid", cursor: "pointer", fontFamily: "inherit", color: "#fff", fontSize: 14, fontWeight: 800, flexShrink: 0, marginTop: 2 },
-  triggerLabel: { fontSize: 13, color: "#cde4f5", fontWeight: 600, marginBottom: 4, lineHeight: 1.4 },
-  triggerDesc: { fontSize: 11, color: "#5a8aaa", lineHeight: 1.5 },
+  triggerLabel: { fontSize: 13, color: "var(--g-text)", fontWeight: 600, marginBottom: 4, lineHeight: 1.4 },
+  triggerDesc: { fontSize: 11, color: "var(--g-text-muted)", lineHeight: 1.5 },
   weight: { fontSize: 11, fontWeight: 800, padding: "3px 8px", borderRadius: 5, border: "1px solid", flexShrink: 0 },
-  moduleCard: { background: "rgba(10,25,48,0.6)", border: "1px solid", borderRadius: 12, padding: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem", transition: "border-color 0.2s" },
+  moduleCard: { background: "var(--g-surface)", border: "1px solid", borderRadius: 12, padding: "1rem", display: "flex", flexDirection: "column", gap: "0.75rem", transition: "border-color 0.2s" },
   moduleHeader: { display: "flex", alignItems: "center", gap: 12, background: "none", border: "none", padding: 0, cursor: "pointer", color: "inherit", fontFamily: "inherit", width: "100%" },
   moduleIcon: { fontSize: 28, flexShrink: 0 },
   moduleTitle: { fontSize: 14, fontWeight: 800 },
-  modulePriority: { fontSize: 10, color: "#5a8aaa", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 2 },
+  modulePriority: { fontSize: 10, color: "var(--g-text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 2 },
   moduleStats: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 },
-  stat: { background: "rgba(5,15,30,0.5)", borderRadius: 6, padding: "0.5rem" },
-  statLabel: { fontSize: 9, color: "#5a8aaa", textTransform: "uppercase", marginBottom: 2 },
+  stat: { background: "var(--g-input-bg)", borderRadius: 6, padding: "0.5rem" },
+  statLabel: { fontSize: 9, color: "var(--g-text-muted)", textTransform: "uppercase", marginBottom: 2 },
   statValue: { fontSize: 12, fontWeight: 800, fontVariantNumeric: "tabular-nums" },
-  synergyBox: { fontSize: 11, color: "#b8d4e8", lineHeight: 1.5, background: "rgba(5,15,30,0.3)", padding: "6px 10px", borderRadius: 6 },
+  synergyBox: { fontSize: 11, color: "var(--g-text)", lineHeight: 1.5, background: "var(--g-input-bg)", padding: "6px 10px", borderRadius: 6 },
   reqList: { listStyle: "disc", paddingLeft: 18, margin: 0, display: "flex", flexDirection: "column", gap: 4 },
-  reqItem: { fontSize: 11, color: "#7aaec8", lineHeight: 1.5 },
-  empty: { textAlign: "center", padding: "3rem 1rem", color: "#5a8aaa", fontSize: 12, background: "rgba(10,25,48,0.3)", border: "1px dashed #1a3a5c", borderRadius: 10 },
-  planSummary: { background: "linear-gradient(135deg, rgba(52,211,153,0.06), rgba(10,25,48,0.7))", border: "1px solid rgba(52,211,153,0.2)", borderRadius: 12, padding: "1rem" },
-  planTitle: { fontSize: 14, fontWeight: 700, color: "#e8f4ff", marginBottom: "0.75rem" },
+  reqItem: { fontSize: 11, color: "var(--g-text-muted)", lineHeight: 1.5 },
+  empty: { textAlign: "center", padding: "3rem 1rem", color: "var(--g-text-muted)", fontSize: 12, background: "var(--g-surface)", border: "1px dashed var(--g-border)", borderRadius: 10 },
+  planSummary: { background: "linear-gradient(135deg, rgba(52,211,153,0.06), var(--g-surface))", border: "1px solid rgba(52,211,153,0.2)", borderRadius: 12, padding: "1rem" },
+  planTitle: { fontSize: 14, fontWeight: 700, color: "var(--g-text)", marginBottom: "0.75rem" },
   planGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 },
-  planStatCard: { background: "rgba(5,15,30,0.5)", border: "1px solid #0e2a45", borderRadius: 8, padding: "0.7rem" },
+  planStatCard: { background: "var(--g-input-bg)", border: "1px solid var(--g-border)", borderRadius: 8, padding: "0.7rem" },
   planStatBig: { padding: "0.9rem" },
-  planStatLabel: { fontSize: 9, color: "#5a8aaa", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 },
+  planStatLabel: { fontSize: 9, color: "var(--g-text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 },
   planStatValue: { fontSize: 16, fontWeight: 800, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" },
-  moduleSummaryCard: { background: "rgba(10,25,48,0.5)", borderRadius: 8, padding: "0.75rem 0.9rem" },
+  moduleSummaryCard: { background: "var(--g-surface)", borderRadius: 8, padding: "0.75rem 0.9rem" },
   moduleSummaryHeader: { display: "flex", gap: 8, alignItems: "center", marginBottom: 4, fontSize: 13 },
-  moduleSummaryStats: { fontSize: 11, color: "#b8d4e8" },
+  moduleSummaryStats: { fontSize: 11, color: "var(--g-text)" },
   recommendCard: { background: "rgba(56,189,248,0.06)", border: "1px solid rgba(56,189,248,0.2)", borderRadius: 10, padding: "0.85rem" },
   recommendTitle: { fontSize: 12, fontWeight: 700, color: "#38bdf8", marginBottom: 6 },
-  recommendText: { fontSize: 12, color: "#cde4f5", lineHeight: 1.6 },
+  recommendText: { fontSize: 12, color: "var(--g-text)", lineHeight: 1.6 },
 };

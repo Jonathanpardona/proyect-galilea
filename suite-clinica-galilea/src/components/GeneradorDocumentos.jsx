@@ -689,7 +689,7 @@ export default function GeneradorDocumentos() {
                   }}>
                   <span style={{ fontSize: 22 }}>{doc.icon}</span>
                   <div style={{ flex: 1, textAlign: "left", minWidth: 0 }}>
-                    <div style={{ ...styles.docTitle, color: selected === doc.id ? doc.color : "#cde4f5" }}>
+                    <div style={{ ...styles.docTitle, color: selected === doc.id ? doc.color : "var(--g-text)" }}>
                       {doc.title}
                     </div>
                     <div style={styles.docDesc}>{doc.desc}</div>
@@ -747,43 +747,43 @@ function FormField({ label, value, onChange, type = "text" }) {
 }
 
 const styles = {
-  root: { minHeight: "100vh", background: "#050f1e", fontFamily: "'DM Sans', sans-serif", color: "#cde4f5", position: "relative" },
-  bg: { position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 50% at 20% 0%, #1a2f5e 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 },
+  root: { minHeight: "100vh", background: "var(--g-page-bg)", fontFamily: "'DM Sans', sans-serif", color: "var(--g-text)", position: "relative" },
+  bg: { position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 50% at 20% 0%, rgba(56,189,248,0.10) 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 },
   header: { position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto", padding: "2rem 1rem 1.5rem" },
   badge: { display: "inline-block", fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "#ef4444", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: 4, padding: "2px 8px", marginBottom: 8 },
-  title: { fontSize: "1.9rem", fontWeight: 800, margin: 0, color: "#e8f4ff", letterSpacing: "-0.02em", lineHeight: 1.1 },
-  subtitle: { fontSize: 13, color: "#5a8aaa", margin: "4px 0 1.25rem" },
-  statsCard: { background: "rgba(10,25,48,0.6)", border: "1px solid #0e2a45", borderRadius: 10, padding: "0.85rem 1rem" },
-  statsLabel: { fontSize: 10, color: "#5a8aaa", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 },
+  title: { fontSize: "1.9rem", fontWeight: 800, margin: 0, color: "var(--g-text)", letterSpacing: "-0.02em", lineHeight: 1.1 },
+  subtitle: { fontSize: 13, color: "var(--g-text-muted)", margin: "4px 0 1.25rem" },
+  statsCard: { background: "var(--g-surface)", border: "1px solid var(--g-border)", borderRadius: 10, padding: "0.85rem 1rem" },
+  statsLabel: { fontSize: 10, color: "var(--g-text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 },
   statsRow: { display: "flex", alignItems: "center", gap: 10 },
-  progressBar: { flex: 1, height: 6, background: "#0e2a45", borderRadius: 3, overflow: "hidden" },
+  progressBar: { flex: 1, height: 6, background: "var(--g-border)", borderRadius: 3, overflow: "hidden" },
   progressFill: { height: "100%", background: "linear-gradient(90deg, #38bdf8, #34d399)", borderRadius: 3, transition: "width 0.4s" },
   statsValue: { fontSize: 13, fontWeight: 700, color: "#34d399", fontVariantNumeric: "tabular-nums" },
   main: { position: "relative", zIndex: 1, maxWidth: 760, margin: "0 auto", padding: "0 1rem 3rem", display: "flex", flexDirection: "column", gap: "1rem" },
-  tabs: { display: "flex", gap: 4, padding: 4, background: "rgba(10,25,48,0.5)", borderRadius: 10, border: "1px solid #0e2a45" },
-  tab: { flex: 1, background: "transparent", border: "none", padding: "8px 12px", fontSize: 12, color: "#5a8aaa", cursor: "pointer", borderRadius: 6, fontWeight: 600, fontFamily: "inherit" },
+  tabs: { display: "flex", gap: 4, padding: 4, background: "var(--g-surface)", borderRadius: 10, border: "1px solid var(--g-border)" },
+  tab: { flex: 1, background: "transparent", border: "none", padding: "8px 12px", fontSize: 12, color: "var(--g-text-muted)", cursor: "pointer", borderRadius: 6, fontWeight: 600, fontFamily: "inherit" },
   tabActive: { background: "rgba(239,68,68,0.15)", color: "#ef4444" },
-  formCard: { background: "rgba(10,25,48,0.6)", border: "1px solid #0e2a45", borderRadius: 12, padding: "1rem", display: "flex", flexDirection: "column", gap: "1.25rem" },
+  formCard: { background: "var(--g-surface)", border: "1px solid var(--g-border)", borderRadius: 12, padding: "1rem", display: "flex", flexDirection: "column", gap: "1.25rem" },
   section: { display: "flex", flexDirection: "column", gap: 8 },
-  sectionTitle: { fontSize: 11, fontWeight: 700, color: "#a78bfa", textTransform: "uppercase", letterSpacing: "0.08em", paddingBottom: 6, borderBottom: "1px solid rgba(14,42,69,0.6)" },
+  sectionTitle: { fontSize: 11, fontWeight: 700, color: "#a78bfa", textTransform: "uppercase", letterSpacing: "0.08em", paddingBottom: 6, borderBottom: "1px solid var(--g-surface)" },
   sectionContent: { display: "flex", flexDirection: "column", gap: 8 },
   fieldRow: { display: "flex", gap: 8 },
   field: { display: "flex", flexDirection: "column", gap: 4, flex: 1, minWidth: 0 },
-  fieldLabel: { fontSize: 10, color: "#5a8aaa", textTransform: "uppercase", letterSpacing: "0.04em", fontWeight: 600 },
-  fieldInput: { background: "rgba(5,15,30,0.7)", border: "1px solid #1a3a5c", borderRadius: 6, padding: "8px 10px", color: "#cde4f5", fontSize: 13, outline: "none", fontFamily: "inherit", width: "100%", boxSizing: "border-box" },
+  fieldLabel: { fontSize: 10, color: "var(--g-text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", fontWeight: 600 },
+  fieldInput: { background: "var(--g-input-bg)", border: "1px solid var(--g-border)", borderRadius: 6, padding: "8px 10px", color: "var(--g-text)", fontSize: 13, outline: "none", fontFamily: "inherit", width: "100%", boxSizing: "border-box" },
   fieldInputPlaceholder: { borderColor: "rgba(248,113,113,0.4)", color: "#f87171" },
   docList: { display: "flex", flexDirection: "column", gap: 6 },
-  docCard: { display: "flex", alignItems: "center", gap: 12, padding: "0.75rem 0.9rem", background: "rgba(10,25,48,0.6)", border: "1px solid #0e2a45", borderRadius: 10, cursor: "pointer", color: "inherit", fontFamily: "inherit", transition: "all 0.2s" },
+  docCard: { display: "flex", alignItems: "center", gap: 12, padding: "0.75rem 0.9rem", background: "var(--g-surface)", border: "1px solid var(--g-border)", borderRadius: 10, cursor: "pointer", color: "inherit", fontFamily: "inherit", transition: "all 0.2s" },
   docTitle: { fontSize: 13, fontWeight: 700, marginBottom: 2 },
-  docDesc: { fontSize: 10, color: "#5a8aaa", lineHeight: 1.4 },
+  docDesc: { fontSize: 10, color: "var(--g-text-muted)", lineHeight: 1.4 },
   actions: { display: "flex", gap: 8 },
-  actionBtn: { flex: 1, background: "transparent", border: "1px solid #1a3a5c", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "#7aaec8", cursor: "pointer", fontWeight: 600, fontFamily: "inherit" },
+  actionBtn: { flex: 1, background: "transparent", border: "1px solid var(--g-border)", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "var(--g-text-muted)", cursor: "pointer", fontWeight: 600, fontFamily: "inherit" },
   actionBtnPrimary: { flex: 1, background: "rgba(52,211,153,0.15)", border: "1px solid #34d399", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "#34d399", cursor: "pointer", fontWeight: 700, fontFamily: "inherit" },
-  preview: { background: "rgba(5,15,30,0.7)", border: "1px solid #0e2a45", borderRadius: 12, padding: "1rem", maxHeight: "60vh", overflowY: "auto" },
-  previewHeader: { display: "flex", alignItems: "center", gap: 8, paddingBottom: 8, marginBottom: 12, borderBottom: "1px solid rgba(14,42,69,0.5)" },
-  previewTitle: { fontSize: 12, color: "#cde4f5" },
-  previewText: { fontSize: 11, lineHeight: 1.6, color: "#b8d4e8", whiteSpace: "pre-wrap", margin: 0, fontFamily: "monospace" },
+  preview: { background: "var(--g-input-bg)", border: "1px solid var(--g-border)", borderRadius: 12, padding: "1rem", maxHeight: "60vh", overflowY: "auto" },
+  previewHeader: { display: "flex", alignItems: "center", gap: 8, paddingBottom: 8, marginBottom: 12, borderBottom: "1px solid var(--g-surface)" },
+  previewTitle: { fontSize: 12, color: "var(--g-text)" },
+  previewText: { fontSize: 11, lineHeight: 1.6, color: "var(--g-text)", whiteSpace: "pre-wrap", margin: 0, fontFamily: "monospace" },
   tipCard: { background: "rgba(251,191,36,0.06)", border: "1px solid rgba(251,191,36,0.2)", borderRadius: 10, padding: "0.85rem" },
   tipTitle: { fontSize: 12, fontWeight: 700, color: "#fbbf24", marginBottom: 6 },
-  tipText: { fontSize: 12, color: "#cde4f5", lineHeight: 1.6 },
+  tipText: { fontSize: 12, color: "var(--g-text)", lineHeight: 1.6 },
 };
