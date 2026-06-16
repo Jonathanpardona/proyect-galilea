@@ -13,6 +13,7 @@ import TrackerREAS from './components/TrackerREAS'
 import PipelineB2B from './components/PipelineB2B'
 import RoadmapFase2 from './components/RoadmapFase2'
 import AnalizadorRentabilidad from './components/AnalizadorRentabilidad'
+import EstudioDemanda from './components/EstudioDemanda'
 import './App.css'
 
 const MODULOS = [
@@ -40,6 +41,14 @@ const MODULOS = [
     icono: '💰',
     grupo: 'Pre-Apertura',
     componente: PlanificadorCapex,
+  },
+  {
+    id: 'demanda',
+    label: 'Estudio de Demanda',
+    descripcion: 'Mercado, competencia y TAM·SAM·SOM',
+    icono: '🎯',
+    grupo: 'Pre-Apertura',
+    componente: EstudioDemanda,
   },
   {
     id: 'simulador',

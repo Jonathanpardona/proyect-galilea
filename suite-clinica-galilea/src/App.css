@@ -288,3 +288,12 @@ input:focus, select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59
   width: 100%; min-width: 130px; padding: 4px 8px;
   border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px;
 }
+
+/* Estudio de Demanda — embudo de mercado */
+.mkt-funnel { display: flex; flex-direction: column; gap: 12px; margin: 8px 0 4px; }
+.mkt-funnel-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+.mkt-funnel-label { font-size: 13px; font-weight: 600; color: #334155; }
+.mkt-funnel-label small { font-weight: 400; color: #94a3b8; }
+.mkt-funnel-val { font-size: 14px; font-weight: 700; color: #1e293b; font-variant-numeric: tabular-nums; }
+.mkt-bar-track { height: 22px; background: #f1f5f9; border-radius: 6px; overflow: hidden; }
+.mkt-bar-fill { height: 100%; border-radius: 6px; transition: width 0.3s; min-width: 4px; }
