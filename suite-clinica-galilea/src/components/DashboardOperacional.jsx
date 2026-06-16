@@ -11,29 +11,20 @@ const EXAM_CATALOG = [
 
 const today = () => new Date().toISOString().slice(0, 10);
 
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
+
 export default function DashboardOperacional() {
-  const [registros, setRegistros] = useState([]);
+  const [registros, setRegistros] = useState(() => loadSaved().registros ?? []);
   const [fechaActiva, setFechaActiva] = useState(today());
   const [showNew, setShowNew] = useState(false);
   const [view, setView] = useState("dia");
-  const [loaded, setLoaded] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const p = JSON.parse(saved);
-        if (p.registros) setRegistros(p.registros);
-      }
-    } catch {}
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!loaded) return;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ registros })); } catch {}
-  }, [registros, loaded]);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ registros })); } catch { /* noop */ }
+  }, [registros]);
 
   const addRegistro = (data) => {
     const r = { id: `r${Date.now()}`, fecha: fechaActiva, hora: new Date().toTimeString().slice(0, 5), ...data };

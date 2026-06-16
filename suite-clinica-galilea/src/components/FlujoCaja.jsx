@@ -13,50 +13,32 @@ const fmt = (n) =>
   })
 const fmtM = (n) => `$${((Number.isFinite(n) ? n : 0) / 1000000).toFixed(1)}M`
 
-export default function FlujoCaja() {
-  const [horizonte, setHorizonte] = useState(12)
-  const [ingresoObjetivo, setIngresoObjetivo] = useState(5500000)
-  const [mesApertura, setMesApertura] = useState(3)
-  const [rampInicialPct, setRampInicialPct] = useState(40)
-  const [rampMeses, setRampMeses] = useState(6)
-  const [costoVarPct, setCostoVarPct] = useState(48)
-  const [opexMensual, setOpexMensual] = useState(2420000)
-  const [opexDesdeMes, setOpexDesdeMes] = useState(1)
-  const [capex, setCapex] = useState(8450000)
-  const [mesCapex, setMesCapex] = useState(2)
-  const [capitalPropio, setCapitalPropio] = useState(2000000)
-  const [subsidios, setSubsidios] = useState(5000000)
-  const [mesSubsidio, setMesSubsidio] = useState(2)
-  const [credito, setCredito] = useState(7000000)
-  const [mesCredito, setMesCredito] = useState(2)
-  const [tasaAnual, setTasaAnual] = useState(11)
-  const [plazoMeses, setPlazoMeses] = useState(48)
-  const [loaded, setLoaded] = useState(false)
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
+const numOr = (v, def) => typeof v === 'number' ? v : def
 
-  const FIELDS = useMemo(() => ({
-    horizonte: setHorizonte, ingresoObjetivo: setIngresoObjetivo, mesApertura: setMesApertura,
-    rampInicialPct: setRampInicialPct, rampMeses: setRampMeses, costoVarPct: setCostoVarPct,
-    opexMensual: setOpexMensual, opexDesdeMes: setOpexDesdeMes, capex: setCapex, mesCapex: setMesCapex,
-    capitalPropio: setCapitalPropio, subsidios: setSubsidios, mesSubsidio: setMesSubsidio,
-    credito: setCredito, mesCredito: setMesCredito, tasaAnual: setTasaAnual, plazoMeses: setPlazoMeses,
-  }), [])
+export default function FlujoCaja() {
+  const [horizonte, setHorizonte] = useState(() => numOr(loadSaved().horizonte, 12))
+  const [ingresoObjetivo, setIngresoObjetivo] = useState(() => numOr(loadSaved().ingresoObjetivo, 5500000))
+  const [mesApertura, setMesApertura] = useState(() => numOr(loadSaved().mesApertura, 3))
+  const [rampInicialPct, setRampInicialPct] = useState(() => numOr(loadSaved().rampInicialPct, 40))
+  const [rampMeses, setRampMeses] = useState(() => numOr(loadSaved().rampMeses, 6))
+  const [costoVarPct, setCostoVarPct] = useState(() => numOr(loadSaved().costoVarPct, 48))
+  const [opexMensual, setOpexMensual] = useState(() => numOr(loadSaved().opexMensual, 2420000))
+  const [opexDesdeMes, setOpexDesdeMes] = useState(() => numOr(loadSaved().opexDesdeMes, 1))
+  const [capex, setCapex] = useState(() => numOr(loadSaved().capex, 8450000))
+  const [mesCapex, setMesCapex] = useState(() => numOr(loadSaved().mesCapex, 2))
+  const [capitalPropio, setCapitalPropio] = useState(() => numOr(loadSaved().capitalPropio, 2000000))
+  const [subsidios, setSubsidios] = useState(() => numOr(loadSaved().subsidios, 5000000))
+  const [mesSubsidio, setMesSubsidio] = useState(() => numOr(loadSaved().mesSubsidio, 2))
+  const [credito, setCredito] = useState(() => numOr(loadSaved().credito, 7000000))
+  const [mesCredito, setMesCredito] = useState(() => numOr(loadSaved().mesCredito, 2))
+  const [tasaAnual, setTasaAnual] = useState(() => numOr(loadSaved().tasaAnual, 11))
+  const [plazoMeses, setPlazoMeses] = useState(() => numOr(loadSaved().plazoMeses, 48))
 
   // ── Persistencia ──────────────────────────────────────
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) {
-        const p = JSON.parse(saved)
-        Object.entries(FIELDS).forEach(([k, setter]) => {
-          if (typeof p[k] === 'number') setter(p[k])
-        })
-      }
-    } catch { /* noop */ }
-    setLoaded(true)
-  }, [FIELDS])
-
-  useEffect(() => {
-    if (!loaded) return
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         horizonte, ingresoObjetivo, mesApertura, rampInicialPct, rampMeses, costoVarPct,
@@ -66,7 +48,7 @@ export default function FlujoCaja() {
     } catch { /* noop */ }
   }, [horizonte, ingresoObjetivo, mesApertura, rampInicialPct, rampMeses, costoVarPct,
       opexMensual, opexDesdeMes, capex, mesCapex, capitalPropio, subsidios, mesSubsidio,
-      credito, mesCredito, tasaAnual, plazoMeses, loaded])
+      credito, mesCredito, tasaAnual, plazoMeses])
 
   // ── Cálculos ──────────────────────────────────────────
   const calc = useMemo(() => {

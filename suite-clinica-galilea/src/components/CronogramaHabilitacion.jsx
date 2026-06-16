@@ -20,12 +20,6 @@ const ESTADO_COLOR = {
   pendiente: '#e2e8f0',
 }
 
-const ESTADO_TEXT = {
-  completado: '#fff',
-  'en-curso': '#fff',
-  pendiente: '#64748b',
-}
-
 const ESTADOS = ['pendiente', 'en-curso', 'completado']
 
 export default function CronogramaHabilitacion() {

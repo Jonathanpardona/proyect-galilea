@@ -29,28 +29,19 @@ const DEFAULT_ITEMS = [
 
 const fmtCLP = (n) => `$${Math.round(n).toLocaleString("es-CL")}`;
 
+function loadSaved() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { return {} }
+}
+
 export default function ControlStock() {
-  const [items, setItems] = useState(DEFAULT_ITEMS);
+  const [items, setItems] = useState(() => loadSaved().items ?? DEFAULT_ITEMS);
   const [editingId, setEditingId] = useState(null);
   const [showNew, setShowNew] = useState(false);
   const [filtro, setFiltro] = useState("todos");
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const p = JSON.parse(saved);
-        if (p.items) setItems(p.items);
-      }
-    } catch {}
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!loaded) return;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ items })); } catch {}
-  }, [items, loaded]);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ items })); } catch { /* noop */ }
+  }, [items]);
 
   const updateItem = (id, field, val) => {
     setItems((prev) => prev.map((i) => i.id === id ? { ...i, [field]: val } : i));
