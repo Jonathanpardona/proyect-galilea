@@ -5,6 +5,7 @@ on:
     branches:
       - claude/review-sampling-project-ECMRt
       - claude/zealous-hamilton-vJSDJ
+      - claude/dazzling-brown-s5ts36
 
 permissions:
   contents: read
