@@ -40,6 +40,18 @@
     button{background:var(--accent);color:#04293c;border:0;border-radius:6px;padding:8px 10px;font-weight:600;cursor:pointer;width:100%}
     button.sec{background:var(--panel2);color:var(--txt);border:1px solid #475569;margin-top:6px}
     .leaflet-popup-content{font-size:12px;line-height:1.5}
+    details.guide{background:var(--panel2);border:1px solid #334155;border-radius:8px;padding:0 12px;margin-bottom:6px}
+    details.guide>summary{cursor:pointer;list-style:none;padding:11px 0;font-size:13px;font-weight:600;color:var(--accent);display:flex;justify-content:space-between;align-items:center}
+    details.guide>summary::-webkit-details-marker{display:none}
+    details.guide>summary::after{content:'▸';color:var(--muted);font-size:12px;transition:transform .2s}
+    details.guide[open]>summary::after{transform:rotate(90deg)}
+    details.guide .body{font-size:12px;line-height:1.6;color:var(--txt);padding:0 0 12px}
+    details.guide .body p{margin:0 0 8px}
+    details.guide .scale{display:flex;height:12px;border-radius:6px;margin:6px 0 2px;background:linear-gradient(90deg,#2563eb,#22c55e,#eab308,#f97316,#ef4444)}
+    details.guide .scale-l{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:8px}
+    details.guide ul{margin:4px 0 8px;padding-left:18px}
+    details.guide li{margin-bottom:4px}
+    details.guide b.hl{color:#fff}
   </style>
 </head>
 <body>
@@ -56,6 +68,35 @@
   <div id="side">
     <h1>Mapa de Calor · Clínica Galilea</h1>
     <p class="sub">Factibilidad de captación de pacientes — Los Ángeles, Región del Biobío, Chile.</p>
+
+    <details class="guide">
+      <summary>ℹ️ Cómo leer el mapa</summary>
+      <div class="body">
+        <p>El color muestra el <b class="hl">potencial de captación de pacientes</b> de cada
+        zona: <b class="hl">mientras más rojo, más conviene</b> captar pacientes ahí.</p>
+        <div class="scale"></div>
+        <div class="scale-l"><span>Bajo</span><span>Medio</span><span>Alto</span></div>
+
+        <p><b class="hl">El puntaje (0–100)</b> de cada sector combina:</p>
+        <ul>
+          <li><b>Población</b> — cuánta gente vive en la zona.</li>
+          <li><b>Nivel socioeconómico</b> (1–5) — capacidad de pagar atención privada.</li>
+          <li><b>Adulto mayor</b> (1–5) — más demanda de salud crónica.</li>
+          <li><b>Cercanía a tu clínica ⭐</b> — los sectores lejanos valen menos.</li>
+          <li><b>Competencia privada ⚕️</b> — resta puntos si hay un centro privado pegado (zona saturada). El hospital 🏥 y los CESFAM ➕ <i>no</i> restan: son salud pública.</li>
+        </ul>
+
+        <p><b class="hl">Puedes experimentar:</b> mueve los deslizadores para cambiar el peso
+        de cada factor, arrastra la ⭐ (o usa el buscador 🔍) para cambiar la ubicación, y
+        todo se recalcula al instante. El <b>ranking de sectores</b> y los puntajes son la
+        referencia confiable.</p>
+
+        <p style="color:var(--muted)"><b>Ojo:</b> el calor está pensado para leerse a la vista
+        de ciudad; los anillos (1·2·3 km) muestran tu alcance. Los índices por sector son
+        <i>estimaciones de planificación</i>, no cifras oficiales por manzana — úsalo para
+        priorizar <i>dónde mirar primero</i>, no como dato exacto.</p>
+      </div>
+    </details>
 
     <h2>Censo 2024 · Comuna</h2>
     <div class="kpis">
