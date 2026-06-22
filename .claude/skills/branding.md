@@ -10,16 +10,31 @@ description: >
 # Skill de Branding — Proyecto Galilea
 
 ## Contexto del proyecto
-Suite Clínica Galilea es una plataforma de gestión clínica. El branding debe reflejar:
-- **Confianza y profesionalismo** médico
-- **Calidez humana** hacia pacientes
-- **Modernidad y tecnología** accesible
+Este proyecto es una plataforma de gestión para un centro médico/clínica ubicado en el **sector Galilea**.
+- **"Galilea"** es el nombre del sector geográfico, NO el nombre del centro médico.
+- El nombre del centro médico **aún está por definir**.
+- El branding debe reflejar:
+  - **Confianza y profesionalismo** médico
+  - **Calidez humana** hacia pacientes
+  - **Modernidad y tecnología** accesible
 
 ## Identidad de marca
 
-### Nombre y concepto
-- **Nombre:** Galilea
-- **Concepto:** Claridad, guía, luz — como referencia al lago de Galilea, transmite paz y certeza
+### Nombre del centro médico — en evaluación
+El cliente está decidiendo entre propuestas con estilo moderno y profesional. Candidatos actuales:
+
+| Opción | Concepto |
+|--------|----------|
+| **Nexasalud** | "Nexa" = conexión/vínculo. Transmite red de salud, integración, tecnología conectada |
+| **Novamedic** | "Nova" = nuevo/innovación. Transmite medicina de vanguardia, renovación, modernidad |
+
+**Criterios para elegir el nombre definitivo:**
+- Fácil de pronunciar y recordar
+- Funciona bien como marca digital (dominio, redes sociales)
+- Transmite confianza médica + modernidad
+- Se diferencia de clínicas tradicionales del sector
+
+> Hasta que se defina el nombre, usar el placeholder `[Nombre Centro Médico]` en cualquier texto de UI o documentación.
 
 ### Paleta de colores recomendada
 | Rol | Color | Hex |
